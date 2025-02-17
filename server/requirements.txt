@@ -7,3 +7,4 @@ Flask-Cors            # If you need CORS support
 Flask-RESTful         # If building a REST API
 gunicorn              # If deploying with Gunicorn (for production servers)
 python-dotenv         # If using environment variables
+flask_jwt_extended

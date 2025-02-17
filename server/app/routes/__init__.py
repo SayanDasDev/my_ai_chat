@@ -5,6 +5,6 @@ main_bp = Blueprint('main', __name__)
 
 # Import all route modules (ensures they get registered)
 from .user_routes import user_bp
-from .post_routes import post_bp
+from .chat_routes import chat_bp
 
 # This allows the main app to import routes easily
