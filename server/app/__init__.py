@@ -18,8 +18,9 @@ def create_app():
     JWTManager(app)
 
     # Register Blueprints (modular routes)
-    from app.routes import user_bp, chat_bp
+    from app.routes import user_bp, chat_bp, message_bp
     app.register_blueprint(user_bp, url_prefix='/user')
     app.register_blueprint(chat_bp, url_prefix='/chats')
+    app.register_blueprint(message_bp, url_prefix='/messages')
 
     return app

@@ -2,9 +2,9 @@ from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import (
     create_access_token,
+    create_refresh_token,
     jwt_required,
     get_jwt_identity,
-    get_jwt,
     unset_jwt_cookies
 )
 from app.models import User, db
@@ -29,7 +29,8 @@ def register():
         db.session.commit()
 
         access_token = create_access_token(identity=new_user.id)
-        return jsonify({"token": access_token, "message": "User registered successfully"}), 201
+        refresh_token = create_refresh_token(identity=new_user.id)
+        return jsonify({"access_token": access_token, "refresh_token": refresh_token, "message": "User registered successfully"}), 201
     except Exception as e:
         print(str(e))
         return jsonify({"error": str(e)}), 500
@@ -45,7 +46,20 @@ def login():
             return jsonify({"error": "Invalid email or password"}), 401
 
         access_token = create_access_token(identity=user.id)
-        return jsonify({"token": access_token, "message": "Login successful"}), 200
+        refresh_token = create_refresh_token(identity=user.id)
+        return jsonify({"access_token": access_token, "refresh_token": refresh_token, "message": "Login successful"}), 200
+    except Exception as e:
+        print(str(e))
+        return jsonify({"error": str(e)}), 500
+
+# Refresh token
+@user_bp.route('/refresh', methods=['POST'])
+@jwt_required(refresh=True)
+def refresh():
+    try:
+        current_user = get_jwt_identity()
+        new_access_token = create_access_token(identity=current_user)
+        return jsonify({"access_token": new_access_token}), 200
     except Exception as e:
         print(str(e))
         return jsonify({"error": str(e)}), 500
