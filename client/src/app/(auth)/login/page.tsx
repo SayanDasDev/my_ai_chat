@@ -22,7 +22,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import LoadingButton from "@/components/ui/loading-button";
+import { useTokenStore } from "@/hooks/use-token-store";
+import { queryKeyStore } from "@/lib/query-key-store";
+import { authQuery } from "@/queries/auth-queries";
 import { loginSchema } from "@/types/schema/login-schema";
+import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 export default function LoginPage() {
@@ -34,9 +38,36 @@ export default function LoginPage() {
     },
   });
 
+  const { logIn } = authQuery();
+  const { setAccessToken, setRefreshToken } = useTokenStore();
+
+  // const router = useRouter();
+
+  const { mutate, isPending } = useMutation({
+    mutationKey: [queryKeyStore.logIn],
+    mutationFn: logIn,
+    onMutate: () => {
+      const toastId = toast.loading("Looking for User");
+      return { toastId };
+    },
+    onError: (error, variables, context) => {
+      toast.error("Please make sure to enter correct credentials.", {
+        id: context?.toastId,
+      });
+    },
+    onSuccess: (data, variables, context) => {
+      setAccessToken(data.access_token);
+      setRefreshToken(data.refresh_token);
+      // router.push("/chat");
+      console.log(data);
+      toast.success("Welcome back!", {
+        id: context?.toastId,
+      });
+    },
+  });
+
   function onSubmit(values: z.infer<typeof loginSchema>) {
-    console.log(values);
-    toast.success("You're logged in");
+    mutate(values);
   }
 
   return (
@@ -57,6 +88,7 @@ export default function LoginPage() {
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
+                        disabled={isPending}
                         placeholder="sayandas@myaichat.com"
                         type="email"
                         {...field}
@@ -82,6 +114,7 @@ export default function LoginPage() {
                     </div>
                     <FormControl>
                       <Input
+                        disabled={isPending}
                         placeholder="sayandas@myaichat.com"
                         type="password"
                         {...field}
@@ -91,7 +124,11 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
-              <LoadingButton type="submit" className="w-full">
+              <LoadingButton
+                isLoading={isPending}
+                type="submit"
+                className="w-full"
+              >
                 Login
               </LoadingButton>
             </form>

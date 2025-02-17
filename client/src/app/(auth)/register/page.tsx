@@ -23,6 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import LoadingButton from "@/components/ui/loading-button";
+import { useTokenStore } from "@/hooks/use-token-store";
 import { queryKeyStore } from "@/lib/query-key-store";
 import { authQuery } from "@/queries/auth-queries";
 import { useMutation } from "@tanstack/react-query";
@@ -40,6 +41,10 @@ export default function RegisterPage() {
 
   const { registerUser } = authQuery();
 
+  const { setAccessToken, setRefreshToken } = useTokenStore();
+
+  // const router = useRouter();
+
   const { mutate, isPending } = useMutation({
     mutationKey: [queryKeyStore.registerUser],
     mutationFn: registerUser,
@@ -53,7 +58,9 @@ export default function RegisterPage() {
       });
     },
     onSuccess: (data, variables, context) => {
-      console.log(data);
+      setAccessToken(data.access_token);
+      setRefreshToken(data.refresh_token);
+      // router.push("/chat");
       toast.success("You're registered!", {
         id: context?.toastId,
       });
