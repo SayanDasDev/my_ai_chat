@@ -10,12 +10,10 @@ export const BACKEND_URL = "http://127.0.0.1:5000"
 
 
 export const assertAuthenticated = async () => {
-  console.log("running 1")
   const { accessToken, refreshToken, setAccessToken, clearTokens } = useTokenStore.getState()
 
   if (!accessToken || !refreshToken)
     return false
-  console.log("running 2")
 
   let response = await fetch(`${BACKEND_URL}/user/check`, {
     method: "GET",
@@ -23,31 +21,51 @@ export const assertAuthenticated = async () => {
       Authorization: `Bearer ${accessToken}`
     }
   })
-  console.log("running 3")
 
   if (response.ok) return true
-  console.log("running 4")
 
-  response = await fetch(`${BACKEND_URL}/user/login`, {
+  response = await fetch(`${BACKEND_URL}/user/refresh`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${refreshToken}`,
       "Content-Type": "application/json",
     }
   })
-  console.log("running 5")
 
   if (!response.ok) {
     clearTokens()
     return false
   }
-  console.log("running 6")
 
   const res = await response.json()
 
   setAccessToken(res.access_token)
 
-  console.log("running 7")
   return true
 
 }
+
+export const ensureAuthenticated = async () => {
+  const isAuthenticated = await assertAuthenticated();
+
+  if (!isAuthenticated) {
+    throw new Error(`401`);
+  }
+};
+
+/**
+ * Get the initials from a full name.
+ * @param name - The full name.
+ * @returns The initials.
+ */
+export const getInitials = (name: string): string => {
+  if (!name) return '';
+
+  const nameParts = name.trim().split(' ');
+  if (nameParts.length === 1) {
+    return nameParts[0].charAt(0).toUpperCase();
+  }
+
+  const initials = nameParts.map(part => part.charAt(0).toUpperCase()).join('');
+  return initials;
+};

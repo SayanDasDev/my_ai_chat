@@ -1,4 +1,6 @@
 export const queryKeyStore = {
   registerUser: "register-user",
-  logIn: "login"
+  logIn: "login",
+  logOut: "logout",
+  getUser: "get-user"
 }

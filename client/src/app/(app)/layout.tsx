@@ -16,7 +16,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useUserStore } from "@/hooks/use-user-store";
+import { queryKeyStore } from "@/lib/query-key-store";
 import { assertAuthenticated } from "@/lib/utils";
+import { authQuery } from "@/queries/auth-queries";
+import { useQuery } from "@tanstack/react-query";
 import { CornerDownLeft, Mic, Paperclip, Share, SquarePen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -26,7 +30,7 @@ export default function AuthLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticating, setIsAuthenticating] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
 
@@ -34,7 +38,7 @@ export default function AuthLayout({
     const checkAuthentication = async () => {
       const authenticated = await assertAuthenticated();
       setIsAuthenticated(authenticated);
-      setIsLoading(false);
+      setIsAuthenticating(false);
       if (!authenticated) {
         router.push("/login");
       }
@@ -43,9 +47,25 @@ export default function AuthLayout({
     checkAuthentication();
   }, [router]);
 
-  if (isLoading) {
+  const { getUser } = authQuery();
+
+  const { data, isLoading } = useQuery({
+    queryKey: [queryKeyStore.getUser],
+    queryFn: getUser,
+  });
+
+  const { setUser } = useUserStore();
+
+  useEffect(() => {
+    if (data) {
+      setUser(data);
+      console.log(data);
+    }
+  }, [data, setUser]);
+
+  if (isAuthenticating || isLoading) {
     return <FullScreenLoading />;
-  } else if (isAuthenticated) {
+  } else if (isAuthenticated || data) {
     return (
       <SidebarProvider>
         <AppSidebar />
@@ -79,7 +99,7 @@ export default function AuthLayout({
           <div className="flex flex-1 flex-col mt-16 mb-[110px] gap-4 p-4 pt-0 max-w-screen-lg w-full mx-auto ">
             {children}
           </div>
-          <div className="fixed w-full px-2 md:w-[calc(100%-255px)] bottom-2">
+          <div className="fixed w-full px-2 md:w-[calc(100%-255px)] bottom-2 [box-shadow:_0px_10px_0px_0px_rgba(28,28,31,1);]">
             <form className="mx-auto w-full max-w-screen-lg rounded-lg border bg-muted focus-within:ring-1 focus-within:ring-ring p-1">
               <ChatInput
                 placeholder="Type your message here..."
@@ -102,6 +122,7 @@ export default function AuthLayout({
                 </Button>
               </div>
             </form>
+            {/* <div className="bg-[#1c1c1f] h-2" /> */}
           </div>
         </SidebarInset>
       </SidebarProvider>

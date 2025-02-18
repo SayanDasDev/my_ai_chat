@@ -1,4 +1,5 @@
-import { BACKEND_URL } from "@/lib/utils"
+import { useTokenStore } from "@/hooks/use-token-store"
+import { BACKEND_URL, ensureAuthenticated } from "@/lib/utils"
 import { loginSchema } from "@/types/schema/login-schema"
 import { registerSchema } from "@/types/schema/register-schema"
 import { z } from "zod"
@@ -38,7 +39,47 @@ export const authQuery = () => {
     return response.json();
   }
 
+  const { accessToken, clearTokens } = useTokenStore.getState()
+
+  const logOut = async () => {
+
+    await ensureAuthenticated()
 
 
-  return { registerUser, logIn }
+    const response = await fetch(`${BACKEND_URL}/user/logout`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    clearTokens()
+
+    return response.json();
+  }
+
+  const getUser = async () => {
+    await ensureAuthenticated()
+
+    const response = await fetch(`${BACKEND_URL}/user/me`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+
+    }
+
+    return response.json()
+
+  }
+
+  return { registerUser, logIn, logOut, getUser }
 }
