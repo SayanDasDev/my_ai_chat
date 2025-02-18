@@ -22,13 +22,13 @@ export default function Home() {
         {
           text: "GitHub",
           href: "https://github.com/my_ai_chat",
-          variant: "secondary",
+          variant: "ghost",
           icon: <Icons.gitHub className="h-5 w-5" />,
         },
       ]}
       image={{
-        light: "/chatui.webp",
-        dark: "/chatui.webp",
+        light: "/chatui.jpg",
+        dark: "/chatui.jpg",
         alt: "UI Preview",
       }}
     />

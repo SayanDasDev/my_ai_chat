@@ -13,7 +13,7 @@ interface HeroAction {
   text: string;
   href: string;
   icon?: React.ReactNode;
-  variant?: "default" | "secondary";
+  variant?: "default" | "secondary" | "ghost";
 }
 
 interface HeroProps {

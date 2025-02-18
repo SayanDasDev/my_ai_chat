@@ -27,6 +27,7 @@ import { queryKeyStore } from "@/lib/query-key-store";
 import { authQuery } from "@/queries/auth-queries";
 import { loginSchema } from "@/types/schema/login-schema";
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 export default function LoginPage() {
@@ -41,7 +42,7 @@ export default function LoginPage() {
   const { logIn } = authQuery();
   const { setAccessToken, setRefreshToken } = useTokenStore();
 
-  // const router = useRouter();
+  const router = useRouter();
 
   const { mutate, isPending } = useMutation({
     mutationKey: [queryKeyStore.logIn],
@@ -58,7 +59,7 @@ export default function LoginPage() {
     onSuccess: (data, variables, context) => {
       setAccessToken(data.access_token);
       setRefreshToken(data.refresh_token);
-      // router.push("/chat");
+      router.push("/chat");
       console.log(data);
       toast.success("Welcome back!", {
         id: context?.toastId,
