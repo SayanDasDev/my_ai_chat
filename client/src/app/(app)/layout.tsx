@@ -1,6 +1,7 @@
 import ModelSelector from "@/components/model-selector";
 import { AppSidebar } from "@/components/ui/app-sidebar";
 import { Button } from "@/components/ui/button";
+import { ChatInput } from "@/components/ui/chat/chat-input";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -13,7 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Share, SquarePen } from "lucide-react";
+import { CornerDownLeft, Mic, Paperclip, Share, SquarePen } from "lucide-react";
 
 export default function AuthLayout({
   children,
@@ -24,7 +25,7 @@ export default function AuthLayout({
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset className="bg-sidebar/75">
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+        <header className="z-10 fixed top-0 w-full md:w-[calc(100%-255px)] backdrop-blur-md flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex w-full gap-2 px-4">
             <div className="flex flex-1 items-center gap-2">
               <SidebarTrigger className="-ml-1" />
@@ -50,14 +51,32 @@ export default function AuthLayout({
             </Button>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-          </div>
-          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
+        <div className="flex flex-1 flex-col mt-16 mb-[110px] gap-4 p-4 pt-0 max-w-screen-lg w-full mx-auto ">
           {children}
+        </div>
+        <div className="fixed w-full px-2 md:w-[calc(100%-255px)] bottom-2">
+          <form className="mx-auto w-full max-w-screen-lg rounded-lg border bg-muted focus-within:ring-1 focus-within:ring-ring p-1">
+            <ChatInput
+              placeholder="Type your message here..."
+              className="min-h-12 resize-none rounded-lg bg-muted border-0 p-3 shadow-none focus-visible:ring-0"
+            />
+            <div className="flex items-center p-3 pt-0">
+              <Button variant="ghost" size="icon">
+                <Paperclip className="size-4" />
+                <span className="sr-only">Attach file</span>
+              </Button>
+
+              <Button variant="ghost" size="icon">
+                <Mic className="size-4" />
+                <span className="sr-only">Use Microphone</span>
+              </Button>
+
+              <Button size="sm" className="ml-auto gap-1.5">
+                Send Message
+                <CornerDownLeft className="size-3.5" />
+              </Button>
+            </div>
+          </form>
         </div>
       </SidebarInset>
     </SidebarProvider>

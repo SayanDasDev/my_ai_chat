@@ -27,8 +27,8 @@ export default function Home() {
         },
       ]}
       image={{
-        light: "/chatui.jpg",
-        dark: "/chatui.jpg",
+        light: "/chatui.png",
+        dark: "/chatui.png",
         alt: "UI Preview",
       }}
     />

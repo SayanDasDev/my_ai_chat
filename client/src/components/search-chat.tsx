@@ -24,7 +24,7 @@ function SearchChat() {
     <div className="relative">
       <Input
         id={id}
-        className="peer pe-9 ps-9"
+        className="peer pe-9 ps-9 bg-muted"
         placeholder="Search..."
         type="search"
         value={inputValue}
