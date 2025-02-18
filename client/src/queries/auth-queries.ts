@@ -38,5 +38,7 @@ export const authQuery = () => {
     return response.json();
   }
 
+
+
   return { registerUser, logIn }
 }

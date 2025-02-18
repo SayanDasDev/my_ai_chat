@@ -53,6 +53,16 @@ def login():
         return jsonify({"error": str(e)}), 500
 
 # Refresh token
+@user_bp.route('/check', methods=['GET'])
+@jwt_required()
+def check():
+    try:
+        return jsonify({"message": "Auth Token Valid"}), 200
+    except Exception as e:
+        print(str(e))
+        return jsonify({"error": str(e)}), 500
+
+# Refresh token
 @user_bp.route('/refresh', methods=['POST'])
 @jwt_required(refresh=True)
 def refresh():
