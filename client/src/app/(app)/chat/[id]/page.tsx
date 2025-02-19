@@ -21,7 +21,11 @@ function ChatPage() {
 
   const chatId = useChatId();
 
-  const { data: messages, isLoading } = useQuery<Message[]>({
+  const {
+    data: messages,
+    isLoading,
+    isError,
+  } = useQuery<Message[]>({
     queryKey: [queryKeyStore.allMessages, chatId],
     queryFn: () => getAllMessages(chatId),
   });
@@ -37,19 +41,25 @@ function ChatPage() {
 
   const { user } = useUserStore();
 
+  const sortedMessages = messages
+    ?.slice()
+    .sort(
+      (a, b) =>
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    );
+
   return (
     <ChatMessageList className="h-full">
-      {isLoading && (
-        <>
-          {/* TODO: Loading skeleton */}
-          `Loading`
-        </>
+      {isLoading && <LoadingState />}
+      {isError && <ErrorState />}
+      {!isLoading && !isError && messages && messages.length == 0 && (
+        <EmptyState />
       )}
-      {!isLoading && messages && messages.length == 0 && <EmptyState />}
       {!isLoading &&
+        !isError &&
         messages &&
         messages.length > 0 &&
-        messages?.map((message, index) => {
+        sortedMessages?.map((message, index) => {
           return (
             <React.Fragment key={message.id}>
               <ChatBubble variant="sent">
@@ -66,7 +76,7 @@ function ChatPage() {
                 <ChatBubbleActionWrapper>
                   {promptActionIcons.map(({ icon: Icon, type }) => (
                     <ChatBubbleAction
-                      className="size-7"
+                      className="size-7 text-muted-foreground"
                       key={type}
                       icon={<Icon className="size-4" />}
                       onClick={() =>
@@ -83,10 +93,10 @@ function ChatPage() {
                 <ChatBubbleMessage>
                   {message.response}
 
-                  <div className="mt-2">
+                  <div className="mt-2 h-[25.5px]">
                     {responseActionIcons.map(({ icon: Icon, type }) => (
                       <ChatBubbleAction
-                        className="size-6"
+                        className="size-6 text-muted-foreground"
                         key={type}
                         icon={<Icon className="size-3" />}
                         onClick={() =>
@@ -112,6 +122,22 @@ const EmptyState = () => {
   return (
     <div className="flex flex-col justify-center items-center h-full gap-2">
       <p className="text-3xl font-medium">What can I help you with?</p>
+    </div>
+  );
+};
+
+const ErrorState = () => {
+  return (
+    <div className="flex flex-col justify-center items-center h-full gap-2">
+      <p className="text-3xl font-medium">Something went wrong!</p>
+    </div>
+  );
+};
+
+const LoadingState = () => {
+  return (
+    <div className="flex flex-col justify-center items-center h-full gap-2">
+      <p className="text-3xl font-medium">Loading your messages.</p>
     </div>
   );
 };

@@ -71,8 +71,8 @@ export const getInitials = (name: string): string => {
   return initials;
 };
 
-export const useChatId = (): string | null => {
+export const useChatId = (): string => {
   const pathname = usePathname();
   const match = pathname.match(/\/chat\/([^/]+)/);
-  return match ? match[1] : null;
+  return match ? match[1] : "";
 };

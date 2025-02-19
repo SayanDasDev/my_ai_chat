@@ -1,5 +1,5 @@
 import { useTokenStore } from "@/hooks/use-token-store";
-import { BACKEND_URL } from "@/lib/utils";
+import { BACKEND_URL, ensureAuthenticated } from "@/lib/utils";
 import { sendMessageSchema } from "@/types/schema/send-message-schema";
 import { z } from "zod";
 
@@ -10,7 +10,10 @@ export const messageQuery = () => {
 
 
   const createMessage = async (values: z.infer<typeof sendMessageSchema>) => {
-    const response = await fetch(`${BACKEND_URL}/messages`, {
+
+    await ensureAuthenticated()
+
+    const response = await fetch(`${BACKEND_URL}/messages/`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -28,9 +31,9 @@ export const messageQuery = () => {
   }
 
 
-  const getAllMessages = async (id: string | null) => {
+  const getAllMessages = async (id: string) => {
 
-    if (!id) {
+    if (id == "") {
       throw new Error(`Cant find ChatId`);
     }
 

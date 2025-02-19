@@ -5,5 +5,6 @@ export const queryKeyStore = {
   getUser: "get-user",
   createChat: "create-chat",
   allChats: "get-all-chats",
-  allMessages: "get-all-messages"
+  allMessages: "get-all-messages",
+  createMessage: "create-message"
 }
