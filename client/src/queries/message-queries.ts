@@ -28,5 +28,25 @@ export const messageQuery = () => {
   }
 
 
-  return { createMessage }
+  const getAllMessages = async (id: string) => {
+    const response = await fetch(`${BACKEND_URL}/messages/${id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+
+
+
+  }
+
+
+  return { createMessage, getAllMessages }
 }
