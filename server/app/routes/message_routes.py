@@ -14,7 +14,6 @@ def create_message():
 
         chat_id = data.get('chat_id')
         prompt = data.get('prompt')
-        response = data.get('response')
 
         if not chat_id or not prompt:
             return jsonify({"error": "chat_id, prompt, and response are required"}), 400
@@ -23,6 +22,8 @@ def create_message():
         chat = Chat.query.filter_by(id=chat_id, user_id=user_id).first()
         if not chat:
             return jsonify({"error": "Chat not found or does not belong to the user"}), 404
+
+        response = "Thinking"
 
         new_message = Message(chat_id=chat_id, prompt=prompt, response=response)
 

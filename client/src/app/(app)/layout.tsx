@@ -59,7 +59,7 @@ export default function AuthLayout({
   useEffect(() => {
     if (data) {
       setUser(data);
-      console.log(data);
+      // console.log(data);
     }
   }, [data, setUser]);
 
