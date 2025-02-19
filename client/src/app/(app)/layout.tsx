@@ -2,7 +2,7 @@
 import FullScreenLoading from "@/components/full-screen-loading";
 import ModelSelector from "@/components/model-selector";
 import { AppSidebar } from "@/components/ui/app-sidebar";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { ChatInput } from "@/components/ui/chat/chat-input";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -16,8 +16,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { assertAuthenticated } from "@/lib/utils";
+import { assertAuthenticated, cn } from "@/lib/utils";
 import { CornerDownLeft, Mic, Paperclip, Share, SquarePen } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -57,10 +58,16 @@ export default function AuthLayout({
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon" className={"h-7 w-7"}>
+                      <Link
+                        href={"/chat"}
+                        className={cn(
+                          buttonVariants({ variant: "ghost", size: "icon" }),
+                          "h-7 w-7"
+                        )}
+                      >
                         <SquarePen />
                         <span className="sr-only">Toggle Sidebar</span>
-                      </Button>
+                      </Link>
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>New Chat</p>

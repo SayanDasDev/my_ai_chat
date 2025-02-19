@@ -1,5 +1,5 @@
 import { useTokenStore } from "@/hooks/use-token-store";
-import { BACKEND_URL } from "@/lib/utils";
+import { BACKEND_URL, ensureAuthenticated } from "@/lib/utils";
 
 
 export const chatQuery = () => {
@@ -8,6 +8,7 @@ export const chatQuery = () => {
 
   const createChat = async () => {
 
+    await ensureAuthenticated()
 
     const response = await fetch(`${BACKEND_URL}/chats/`, {
       method: "POST",

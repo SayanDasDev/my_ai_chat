@@ -8,14 +8,19 @@ type Chat = {
 }
 
 interface ChatState {
-  chat: Chat[] | undefined,
-  setChat: (chat: Chat[]) => void
+  chats: Chat[] | undefined,
+  setChats: (chat: Chat[]) => void
+  clearChats: () => void
 }
 
 export const useChatStore = create(
   persist<ChatState>((set) => ({
-    chat: undefined,
-    setChat: (chat: Chat[]) => set({ chat })
+    chats: undefined,
+    setChats: (chats: Chat[]) => set({ chats }),
+    clearChats: () => {
+      sessionStorage.removeItem(`all-chats`)
+      set({ chats: undefined })
+    }
   }),
     {
       name: `all-chats`,

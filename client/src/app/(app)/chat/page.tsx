@@ -1,8 +1,9 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { useChatStore } from "@/hooks/use-chat-store";
 import { queryKeyStore } from "@/lib/query-key-store";
 import { chatQuery } from "@/queries/chat-queries";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -12,6 +13,10 @@ function NewChatPage() {
   const router = useRouter();
 
   const { createChat } = chatQuery();
+
+  const queryClient = useQueryClient();
+
+  const { clearChats } = useChatStore();
 
   const { mutate, isError, isPending, isSuccess } = useMutation({
     mutationKey: [queryKeyStore.createChat],
@@ -26,6 +31,8 @@ function NewChatPage() {
       });
     },
     onSuccess: (data, variables, context) => {
+      clearChats();
+      queryClient.invalidateQueries({ queryKey: [queryKeyStore.allChats] });
       router.push(`/chat/${data.id}`);
       toast.success("New Chat Created!", {
         id: context?.toastId,

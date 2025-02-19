@@ -29,7 +29,7 @@ const NavChats = () => {
 
   const { getAllChats } = chatQuery();
 
-  const { chat: chats, setChat } = useChatStore();
+  const { chats, setChats } = useChatStore();
 
   const { data: chatdata, isLoading } = useQuery({
     queryKey: [queryKeyStore.allChats],
@@ -39,9 +39,9 @@ const NavChats = () => {
 
   useEffect(() => {
     if (chatdata) {
-      setChat(chatdata);
+      setChats(chatdata);
     }
-  }, [chatdata, setChat]);
+  }, [chatdata, setChats]);
 
   const pathname = usePathname();
 
