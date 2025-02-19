@@ -15,6 +15,7 @@ import { Message } from "@/types/message";
 import { useQuery } from "@tanstack/react-query";
 import { Copy, Edit, RefreshCcw, Trash2 } from "lucide-react";
 import React from "react";
+import Markdown from "react-markdown";
 
 function ChatPage() {
   const { getAllMessages } = messageQuery();
@@ -88,11 +89,10 @@ function ChatPage() {
                   ))}
                 </ChatBubbleActionWrapper>
               </ChatBubble>
-              <ChatBubble layout="ai">
-                <ChatBubbleAvatar fallback={"AI"} />
+              <ChatBubble className="items-end" layout="ai">
+                <ChatBubbleAvatar className="mb-12" fallback={"AI"} />
                 <ChatBubbleMessage>
-                  {message.response}
-
+                  <Markdown>{message.response}</Markdown>
                   <div className="mt-2 h-[25.5px]">
                     {responseActionIcons.map(({ icon: Icon, type }) => (
                       <ChatBubbleAction
