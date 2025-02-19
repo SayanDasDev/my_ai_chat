@@ -28,7 +28,12 @@ export const messageQuery = () => {
   }
 
 
-  const getAllMessages = async (id: string) => {
+  const getAllMessages = async (id: string | null) => {
+
+    if (!id) {
+      throw new Error(`Cant find ChatId`);
+    }
+
     const response = await fetch(`${BACKEND_URL}/messages/${id}`, {
       method: "GET",
       headers: {

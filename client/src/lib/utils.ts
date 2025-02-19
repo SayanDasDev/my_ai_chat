@@ -1,5 +1,6 @@
 import { useTokenStore } from "@/hooks/use-token-store"
 import { clsx, type ClassValue } from "clsx"
+import { usePathname } from "next/navigation"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
@@ -68,4 +69,10 @@ export const getInitials = (name: string): string => {
 
   const initials = nameParts.map(part => part.charAt(0).toUpperCase()).join('');
   return initials;
+};
+
+export const useChatId = (): string | null => {
+  const pathname = usePathname();
+  const match = pathname.match(/\/chat\/([^/]+)/);
+  return match ? match[1] : null;
 };

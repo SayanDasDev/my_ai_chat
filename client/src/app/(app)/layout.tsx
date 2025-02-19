@@ -1,9 +1,9 @@
 "use client";
+import ChatInput from "@/components/chat-input";
 import FullScreenLoading from "@/components/full-screen-loading";
 import ModelSelector from "@/components/model-selector";
 import { AppSidebar } from "@/components/ui/app-sidebar";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { ChatInput } from "@/components/ui/chat/chat-input";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -17,7 +17,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { assertAuthenticated, cn } from "@/lib/utils";
-import { CornerDownLeft, Mic, Paperclip, Share, SquarePen } from "lucide-react";
+import { Share, SquarePen } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -87,29 +87,7 @@ export default function AuthLayout({
             {children}
           </div>
           <div className="fixed w-full px-2 md:w-[calc(100%-255px)] bottom-2 [box-shadow:_0px_10px_0px_0px_rgba(28,28,31,1);]">
-            <form className="mx-auto w-full max-w-screen-lg rounded-lg border bg-muted focus-within:ring-1 focus-within:ring-ring p-1">
-              <ChatInput
-                placeholder="Type your message here..."
-                className="min-h-12 resize-none rounded-lg bg-muted border-0 p-3 shadow-none focus-visible:ring-0"
-              />
-              <div className="flex items-center p-3 pt-0">
-                <Button variant="ghost" size="icon">
-                  <Paperclip className="size-4" />
-                  <span className="sr-only">Attach file</span>
-                </Button>
-
-                <Button variant="ghost" size="icon">
-                  <Mic className="size-4" />
-                  <span className="sr-only">Use Microphone</span>
-                </Button>
-
-                <Button size="sm" className="ml-auto gap-1.5">
-                  Send Message
-                  <CornerDownLeft className="size-3.5" />
-                </Button>
-              </div>
-            </form>
-            {/* <div className="bg-[#1c1c1f] h-2" /> */}
+            <ChatInput />
           </div>
         </SidebarInset>
       </SidebarProvider>
