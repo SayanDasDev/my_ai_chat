@@ -28,7 +28,7 @@ export const chatQuery = () => {
 
   const getAllChats = async () => {
 
-    const response = await fetch(`${BACKEND_URL}/chats`, {
+    const response = await fetch(`${BACKEND_URL}/chats/`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,

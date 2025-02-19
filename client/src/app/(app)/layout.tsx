@@ -16,11 +16,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useUserStore } from "@/hooks/use-user-store";
-import { queryKeyStore } from "@/lib/query-key-store";
 import { assertAuthenticated } from "@/lib/utils";
-import { authQuery } from "@/queries/auth-queries";
-import { useQuery } from "@tanstack/react-query";
 import { CornerDownLeft, Mic, Paperclip, Share, SquarePen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -47,25 +43,9 @@ export default function AuthLayout({
     checkAuthentication();
   }, [router]);
 
-  const { getUser } = authQuery();
-
-  const { data, isLoading } = useQuery({
-    queryKey: [queryKeyStore.getUser],
-    queryFn: getUser,
-  });
-
-  const { setUser } = useUserStore();
-
-  useEffect(() => {
-    if (data) {
-      setUser(data);
-      // console.log(data);
-    }
-  }, [data, setUser]);
-
-  if (isAuthenticating || isLoading) {
+  if (isAuthenticating) {
     return <FullScreenLoading />;
-  } else if (isAuthenticated || data) {
+  } else if (isAuthenticated) {
     return (
       <SidebarProvider>
         <AppSidebar />

@@ -3,5 +3,6 @@ export const queryKeyStore = {
   logIn: "login",
   logOut: "logout",
   getUser: "get-user",
-  createChat: "create-chat"
+  createChat: "create-chat",
+  allChats: "get-all-chats"
 }

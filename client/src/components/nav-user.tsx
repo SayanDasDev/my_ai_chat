@@ -25,25 +25,15 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useUserStore } from "@/hooks/use-user-store";
 import { queryKeyStore } from "@/lib/query-key-store";
 import { authQuery } from "@/queries/auth-queries";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
 
-export function NavUser({
-  user,
-}: {
-  user:
-    | {
-        username: string;
-        email: string;
-        avatar: string;
-        id: string;
-        initials: string;
-      }
-    | undefined;
-}) {
+export function NavUser() {
   const { isMobile } = useSidebar();
 
   const router = useRouter();
@@ -77,28 +67,51 @@ export function NavUser({
     },
   });
 
+  const { getUser } = authQuery();
+
+  const { user, setUser } = useUserStore();
+
+  const { data: userdata, isLoading } = useQuery({
+    queryKey: [queryKeyStore.getUser],
+    queryFn: getUser,
+    enabled: !user,
+  });
+
+  useEffect(() => {
+    if (userdata) {
+      setUser(userdata);
+    }
+  }, [userdata, setUser]);
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user?.avatar} alt={user?.username} />
-                <AvatarFallback className="rounded-lg">
-                  {user?.initials}
-                </AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user?.username}</span>
-                <span className="truncate text-xs">{user?.email}</span>
-              </div>
-              <ChevronsUpDown className="ml-auto size-4" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
+          {isLoading ? (
+            // TODO: User Loading skeleton
+            `Loading`
+          ) : (
+            <DropdownMenuTrigger asChild>
+              <SidebarMenuButton
+                size="lg"
+                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              >
+                <Avatar className="h-8 w-8 rounded-lg">
+                  <AvatarImage src={user?.avatar} alt={user?.username} />
+                  <AvatarFallback className="rounded-lg">
+                    {user?.initials}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">
+                    {user?.username}
+                  </span>
+                  <span className="truncate text-xs">{user?.email}</span>
+                </div>
+                <ChevronsUpDown className="ml-auto size-4" />
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+          )}
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             side={isMobile ? "bottom" : "right"}

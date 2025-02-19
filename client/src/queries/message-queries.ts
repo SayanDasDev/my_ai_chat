@@ -43,8 +43,6 @@ export const messageQuery = () => {
 
     return response.json();
 
-
-
   }
 
 
