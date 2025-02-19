@@ -8,6 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const BACKEND_URL = "http://127.0.0.1:5000/api/v1"
+// export const BACKEND_URL = "https://k4jpkgdk-5000.inc1.devtunnels.ms/api/v1"
 
 
 export const assertAuthenticated = async () => {

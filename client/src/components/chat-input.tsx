@@ -40,7 +40,7 @@ const ChatInput = () => {
       queryClient.invalidateQueries({
         queryKey: [queryKeyStore.allMessages, chat_id],
       });
-      form.reset({ prompt: "" });
+      form.reset({ chat_id, prompt: "" });
     },
   });
 
@@ -59,7 +59,6 @@ const ChatInput = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form]);
 
   return (
@@ -96,7 +95,7 @@ const ChatInput = () => {
 
           <LoadingButton
             isLoading={isPending}
-            disabled={!form.watch("prompt")}
+            disabled={!form.watch("prompt") || isPending}
             size="sm"
             className="ml-auto gap-1.5"
           >

@@ -8,3 +8,5 @@ Flask-RESTful         # If building a REST API
 gunicorn              # If deploying with Gunicorn (for production servers)
 python-dotenv         # If using environment variables
 flask_jwt_extended
+
+google-generativeai

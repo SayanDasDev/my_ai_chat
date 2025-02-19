@@ -15,6 +15,7 @@ def create_app():
     db.init_app(app)
     Migrate(app, db)
     CORS(app, resources={r"/api/v1/*": {"origins": "http://localhost:3000"}})
+    CORS(app)
     JWTManager(app)
 
     # Register Blueprints (modular routes)
