@@ -1,1 +1,1 @@
-from .use_gemini import askGemini
+from .use_ai import askAI

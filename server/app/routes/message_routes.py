@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import db, Message, Chat
-from app.services import askGemini
+from app.services import askAI
 
 message_bp = Blueprint('message_bp', __name__)
 
@@ -24,7 +24,7 @@ def create_message():
         if not chat:
             return jsonify({"error": "Chat not found or does not belong to the user"}), 404
 
-        response = askGemini(prompt)
+        response = askAI(prompt)
 
         new_message = Message(chat_id=chat_id, prompt=prompt, response=response)
 
