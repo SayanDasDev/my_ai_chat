@@ -29,22 +29,6 @@ const MarkdownResponse = ({ children }: { children: string }) => {
           <ol className="space-y-1 list-decimal list-inside" {...props} />
         ),
         li: ({ ...props }) => <li className="" {...props} />,
-        // code: ({ children, className, ...props }) => {
-        //   const match = /language-(\w+)/.exec(className || "");
-        //   return match ? (
-        //     <CodeBlock
-        //       language={match[1]}
-        //       code={String(children).replace(/\n$/, "")}
-        //     />
-        //   ) : (
-        //     <code
-        //       className="bg-muted text-sidebar-accent-foreground font-thin border rounded-sm px-2 py-px"
-        //       {...props}
-        //     >
-        //       {children}
-        //     </code>
-        //   );
-        // },
         code: ({ ...props }) => (
           <code
             className="bg-muted text-sidebar-accent-foreground font-thin border rounded-sm px-2 py-px"

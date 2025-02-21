@@ -11,9 +11,8 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import Brand from "../brand";
-import NavChats from "../nav-chats";
+import NavChats from "../nav-chats/nav-chats";
 import { NavUser } from "../nav-user";
-import { SearchChat } from "../search-chat";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -22,9 +21,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <Brand />
       </SidebarHeader>
       <SidebarContent className="">
-        <SidebarGroup>
-          <SidebarGroupLabel>Chats</SidebarGroupLabel>
-          <SearchChat />
+        <SidebarGroup className="relative">
+          <div className="bg-sidebar h-16 fixed top-12 z-10 w-[239]" />
+          <SidebarGroupLabel className="fixed top-[56px] z-10">
+            Chats
+          </SidebarGroupLabel>
           <NavChats />
         </SidebarGroup>
         {/* <NavProjects projects={data.projects} /> */}

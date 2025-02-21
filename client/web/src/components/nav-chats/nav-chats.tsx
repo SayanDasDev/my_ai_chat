@@ -1,32 +1,14 @@
 "use client";
 
-import { Forward, MoreHorizontal, Pen, Trash2 } from "lucide-react";
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  SidebarMenu,
-  SidebarMenuAction,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
+import { SidebarMenu } from "@/components/ui/sidebar";
 import { useChatStore } from "@/hooks/use-chat-store";
 import { queryKeyStore } from "@/lib/query-key-store";
-import { cn } from "@/lib/utils";
 import { chatQuery } from "@/queries/chat-queries";
 import { useQuery } from "@tanstack/react-query";
-import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { DataTable } from "./data-table";
 
 const NavChats = () => {
-  const { isMobile } = useSidebar();
-
   const { getAllChats } = chatQuery();
 
   const { chats, setChats } = useChatStore();
@@ -43,14 +25,12 @@ const NavChats = () => {
     }
   }, [chatdata, setChats]);
 
-  const pathname = usePathname();
-
   return (
     // <SidebarGroup>
     //   <SidebarGroupLabel>Projects</SidebarGroupLabel>
-    <SidebarMenu className="mt-2">
+    <SidebarMenu className="mt-16">
       {isLoading && "Loading..."}
-      {!isLoading &&
+      {/* {!isLoading &&
         chats?.map((item) => (
           <SidebarMenuItem key={item.id}>
             <SidebarMenuButton
@@ -92,7 +72,8 @@ const NavChats = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
-        ))}
+        ))} */}
+      {!isLoading && chats && <DataTable data={chats} />}
       {/* <SidebarMenuItem>
           <SidebarMenuButton className="text-sidebar-foreground/70">
             <MoreHorizontal className="text-sidebar-foreground/70" />
