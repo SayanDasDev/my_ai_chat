@@ -12,11 +12,11 @@ import { TextShimmer } from "@/components/ui/text-shimmer";
 import { useFirstMessage } from "@/hooks/use-first-message";
 import { useUserStore } from "@/hooks/use-user-store";
 import { queryKeyStore } from "@/lib/query-key-store";
-import { useChatId } from "@/lib/utils";
+import { parseResponsePattern, useChatId } from "@/lib/utils";
 import { messageQuery } from "@/queries/message-queries";
 import { Message } from "@/types/message";
 import { useQuery } from "@tanstack/react-query";
-import { Copy, Edit, RefreshCcw, Trash2 } from "lucide-react";
+import { Copy, Edit, FileText, RefreshCcw, Trash2 } from "lucide-react";
 import React, { useEffect } from "react";
 
 function ChatPage() {
@@ -72,8 +72,17 @@ function ChatPage() {
         messages &&
         messages.length > 0 &&
         sortedMessages?.map((message, index) => {
+          const { filename, restOfString: response } = parseResponsePattern(
+            message.response
+          );
           return (
             <React.Fragment key={message.id}>
+              {filename && (
+                <div className="ml-auto mr-14 translate-y-4 rounded-md gap-2 max-w-60 bg-muted border border-muted-foreground/10 px-4 py-2 grid grid-cols-[24px_1fr]">
+                  <FileText className="text-muted-foreground" size={24} />
+                  <p className="text-ellipsis line-clamp-1">{filename}</p>
+                </div>
+              )}
               <ChatBubble className="items-end" variant="sent">
                 <ChatBubbleAvatar
                   src={user?.avatar}
@@ -108,7 +117,7 @@ function ChatPage() {
                       Thinking...
                     </TextShimmer>
                   ) : (
-                    <MarkdownResponse>{message.response}</MarkdownResponse>
+                    <MarkdownResponse>{response}</MarkdownResponse>
                   )}
                   <div className="mt-2 h-[25.5px]">
                     {responseActionIcons.map(({ icon: Icon, type }) => (

@@ -6,7 +6,7 @@ export const sendMessageSchema = z.object({
     .string()
     .max(5000, "Message too long!")
     .min(0, "Please write something"),
-  file: z.instanceof(File).optional().refine((file) => file && file.size < 7000000, {
-    message: 'Your resume must be less than 7MB.',
+  file: z.union([z.instanceof(File), z.undefined()]).optional().refine((file) => !file || file.size < 7000000, {
+    message: 'Your file must be less than 7MB.',
   }),
 });

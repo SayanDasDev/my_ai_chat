@@ -2,3 +2,6 @@
 
 .env
 uploads
+chroma_db
+
+test.py

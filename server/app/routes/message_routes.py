@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import db, Message, Chat
-from app.services import askAI
+from app.services import askAI, askAiWithFile
 from werkzeug.utils import secure_filename
 import os
 import uuid
@@ -20,6 +20,14 @@ def create_message():
         generateChatName = request.form.get('generate_chat_name')
         file = request.files.get('file')
 
+        if not chat_id or not prompt:
+            return jsonify({"error": "chat_id, prompt, and response are required"}), 400
+
+        # Check if the chat exists and belongs to the current user
+        chat = Chat.query.filter_by(id=chat_id, user_id=user_id).first()
+        if not chat:
+            return jsonify({"error": "Chat not found or does not belong to the user"}), 404
+
         upload_folder = os.path.join(os.getcwd(), 'uploads')
         if not os.path.exists(upload_folder):
             os.makedirs(upload_folder)
@@ -29,27 +37,14 @@ def create_message():
             file.save(os.path.join(upload_folder, filename))
             print(f"File saved as {filename}")
 
-        # TODO: Deal with file
-        if file:
-            return jsonify({
-            "id": "str(new_message.id)",
-            "chat_id": chat_id,
-            "prompt": prompt,
-            "response": file.name,
-            "created_at": "sdff"
-        }), 201
+            filepath = upload_folder + "/" + filename
 
-        if not chat_id or not prompt:
-            return jsonify({"error": "chat_id, prompt, and response are required"}), 400
+            response = f"*#FILE=${filename}#" + askAiWithFile(prompt=prompt, filepath=filepath)
 
-        # Check if the chat exists and belongs to the current user
-        chat = Chat.query.filter_by(id=chat_id, user_id=user_id).first()
-        if not chat:
-            return jsonify({"error": "Chat not found or does not belong to the user"}), 404
+        else:
+            response = askAI(prompt)
 
-        response = askAI(prompt)
-
-        if(generateChatName):
+        if(generateChatName == "true"):
             chat_name_prompt = f"Please generate a chat name. I asked you this question: ${prompt} and you answered with this response: ${response}. I may ask you more questions on this topic. Please generate a relevent chat name for this conversation. The chat name should not have more than 5 words. Answer with only those 5 words and nothing else."
             chat_name = askAI(chat_name_prompt)
             chat = Chat.query.filter_by(id=chat_id, user_id=user_id).first()

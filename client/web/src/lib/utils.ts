@@ -77,3 +77,17 @@ export const useChatId = (): string => {
   const match = pathname.match(/\/chat\/([^/]+)/);
   return match ? match[1] : "";
 };
+
+export function parseResponsePattern(input: string): { filename: string | null, restOfString: string } {
+  const pattern = /^\*#FILE=\$(.+?)#([\s\S]*)$/;
+  const match = input.match(pattern);
+
+  if (match) {
+    const fullFilename = match[1];
+    const restOfString = match[2];
+    const filename = fullFilename.substring(fullFilename.indexOf('_') + 1);
+    return { filename, restOfString };
+  } else {
+    return { filename: null, restOfString: input };
+  }
+}
