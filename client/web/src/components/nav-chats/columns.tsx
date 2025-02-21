@@ -3,8 +3,11 @@
 import { Chat } from "@/hooks/use-chat-store";
 import { cn } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
-import { Forward, MoreHorizontal, Pen, Trash2 } from "lucide-react";
+import { Forward, MoreHorizontal, Pen, Trash, Trash2 } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { Button } from "../ui/button";
+import CrudButton from "../ui/crud-button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +20,7 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "../ui/sidebar";
+import DeleteChatForm from "./delete-chat-form";
 
 export const columns: ColumnDef<Chat>[] = [
   {
@@ -37,6 +41,9 @@ export const columns: ColumnDef<Chat>[] = [
 const NavChatElement = ({ chatId, name }: { chatId: string; name: string }) => {
   const pathname = usePathname();
   const { isMobile } = useSidebar();
+
+  const [openDelete, setOpenDelete] = useState(false);
+
   return (
     <>
       <SidebarMenuButton
@@ -71,12 +78,34 @@ const NavChatElement = ({ chatId, name }: { chatId: string; name: string }) => {
             <span>Share Chat</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          {/* <DropdownMenuItem>
             <Trash2 className="text-muted-foreground" />
             <span>Delete Chat</span>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
+          <CrudButton
+            title="Delete Chat"
+            showTitle={false}
+            open={openDelete}
+            setOpen={setOpenDelete}
+            description={<DeleteDescription />}
+            form={<DeleteChatForm setOpen={setOpenDelete} id={chatId} />}
+          >
+            <Button className="w-full justify-start px-2" variant={"ghost"}>
+              <Trash size={16} />
+              <p className="max-sm:sr-only">Delete</p>
+            </Button>
+          </CrudButton>
         </DropdownMenuContent>
       </DropdownMenu>
     </>
+  );
+};
+
+const DeleteDescription = () => {
+  return (
+    <div className="flex flex-col items-center justify-center gap-4 mt-4">
+      <Trash2 className="size-12 text-gray-500" />
+      Are you sure you want to delete this item?
+    </div>
   );
 };
