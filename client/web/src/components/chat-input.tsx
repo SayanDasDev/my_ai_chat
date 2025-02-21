@@ -9,6 +9,7 @@ import { sendMessageSchema } from "@/types/schema/send-message-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CornerDownLeft, Mic, Paperclip } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -71,6 +72,12 @@ const ChatInput = () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [form]);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    form.reset({ chat_id, prompt: "" });
+  }, [router, form, chat_id]);
 
   return (
     <Form {...form}>

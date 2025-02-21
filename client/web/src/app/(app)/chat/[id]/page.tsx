@@ -50,7 +50,7 @@ function ChatPage() {
     } else {
       setIsFirstMessage(false);
     }
-  }, [messages, setIsFirstMessage]);
+  }, [messages, isLoading, isError, setIsFirstMessage]);
 
   const sortedMessages = messages
     ?.slice()
