@@ -102,7 +102,7 @@ function ChatPage() {
               </ChatBubble>
               <ChatBubble className="items-end" layout="ai">
                 <ChatBubbleAvatar className="mb-12" fallback={"AI"} />
-                <ChatBubbleMessage className="w-[calc(100%-40px)]">
+                <ChatBubbleMessage className="w-[calc(100%-40px)] ">
                   {message.response === "Thinking..." ? (
                     <TextShimmer className="font-mono text-sm" duration={1}>
                       Thinking...
