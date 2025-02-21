@@ -1,6 +1,5 @@
-import { Atom } from "@tamagui/lucide-icons";
-import { Link, Tabs } from "expo-router";
-import { Button, useTheme } from "tamagui";
+import { Tabs } from "expo-router";
+import { useTheme } from "tamagui";
 
 export default function TabLayout() {
   const theme = useTheme();
@@ -22,17 +21,15 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="signin"
         options={{
-          title: "Tab One",
-          tabBarIcon: ({ color }) => <Atom color={color as any} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Button mr="$4" bg="$green8" color="$green12">
-                Hello!
-              </Button>
-            </Link>
-          ),
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="signup"
+        options={{
+          headerShown: false,
         }}
       />
     </Tabs>
