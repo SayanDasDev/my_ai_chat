@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import Markdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import rehypeKatex from "rehype-katex";
@@ -15,6 +16,9 @@ const MarkdownResponse = ({ children }: { children: string }) => {
         thead: ({ ...props }) => <TableHeader {...props} />,
         tr: ({ ...props }) => <TableRow {...props} />,
         td: ({ ...props }) => <TableHead {...props} />,
+        a: ({ href, ...props }) => (
+          <Link className="text-blue-800" href={href as string} {...props} />
+        ),
         // code: ({ children, className, ...props }) => {
         //   const match = /language-(\w+)/.exec(className || "");
         //   return match ? (
@@ -39,7 +43,7 @@ const MarkdownResponse = ({ children }: { children: string }) => {
         ),
         pre: ({ children, ...props }) => (
           <pre
-            className="text-sm w-full sm:text-base inline-flex text-left items-center space-x-4 bg-muted text-sidebar-accent-foreground rounded-lg p-4 pl-6"
+            className="text-sm w-full sm:text-base inline-flex text-left items-center space-x-4 bg-muted text-sidebar-accent-foreground rounded-lg p-4 pl-6 overflow-x-scroll"
             {...props}
           >
             <span className="flex gap-4">

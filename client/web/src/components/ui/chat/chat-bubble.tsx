@@ -1,9 +1,9 @@
-import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import MessageLoading from "./message-loading";
+import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 import { Button, ButtonProps } from "../button";
+import MessageLoading from "./message-loading";
 
 // ChatBubble
 const chatBubbleVariant = cva(
@@ -23,7 +23,7 @@ const chatBubbleVariant = cva(
       variant: "received",
       layout: "default",
     },
-  },
+  }
 );
 
 interface ChatBubbleProps
@@ -35,7 +35,7 @@ const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
     <div
       className={cn(
         chatBubbleVariant({ variant, layout, className }),
-        "relative group",
+        "relative group"
       )}
       ref={ref}
       {...props}
@@ -46,10 +46,10 @@ const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
               variant,
               layout,
             } as React.ComponentProps<typeof child.type>)
-          : child,
+          : child
       )}
     </div>
-  ),
+  )
 );
 ChatBubble.displayName = "ChatBubble";
 
@@ -102,12 +102,12 @@ const ChatBubbleMessage = React.forwardRef<
 >(
   (
     { className, variant, layout, isLoading = false, children, ...props },
-    ref,
+    ref
   ) => (
     <div
       className={cn(
         chatBubbleMessageVariants({ variant, layout, className }),
-        "break-words max-w-full whitespace-pre-wrap",
+        "break-words max-w-full whitespace-pre-wrap"
       )}
       ref={ref}
       {...props}
@@ -120,7 +120,7 @@ const ChatBubbleMessage = React.forwardRef<
         children
       )}
     </div>
-  ),
+  )
 );
 ChatBubbleMessage.displayName = "ChatBubbleMessage";
 
@@ -177,11 +177,11 @@ const ChatBubbleActionWrapper = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "absolute top-1/2 -translate-y-1/2 flex opacity-0 group-hover:opacity-100 transition-opacity duration-200",
+      "absolute bottom-1 flex opacity-0 group-hover:opacity-100 transition-opacity duration-200",
       variant === "sent"
         ? "-left-1 -translate-x-full flex-row-reverse"
         : "-right-1 translate-x-full",
-      className,
+      className
     )}
     {...props}
   >
@@ -192,11 +192,11 @@ ChatBubbleActionWrapper.displayName = "ChatBubbleActionWrapper";
 
 export {
   ChatBubble,
-  ChatBubbleAvatar,
-  ChatBubbleMessage,
-  ChatBubbleTimestamp,
-  chatBubbleVariant,
-  chatBubbleMessageVariants,
   ChatBubbleAction,
   ChatBubbleActionWrapper,
+  ChatBubbleAvatar,
+  ChatBubbleMessage,
+  chatBubbleMessageVariants,
+  ChatBubbleTimestamp,
+  chatBubbleVariant,
 };

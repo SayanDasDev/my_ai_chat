@@ -74,7 +74,7 @@ function ChatPage() {
         sortedMessages?.map((message, index) => {
           return (
             <React.Fragment key={message.id}>
-              <ChatBubble variant="sent">
+              <ChatBubble className="items-end" variant="sent">
                 <ChatBubbleAvatar
                   src={user?.avatar}
                   fallback={user?.initials}
@@ -102,7 +102,7 @@ function ChatPage() {
               </ChatBubble>
               <ChatBubble className="items-end" layout="ai">
                 <ChatBubbleAvatar className="mb-12" fallback={"AI"} />
-                <ChatBubbleMessage>
+                <ChatBubbleMessage className="w-[calc(100%-40px)]">
                   {message.response === "Thinking..." ? (
                     <TextShimmer className="font-mono text-sm" duration={1}>
                       Thinking...

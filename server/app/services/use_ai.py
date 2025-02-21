@@ -9,7 +9,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=GEMINI_API_KEY)
 
 
-def askAI(prompt, model='gemini-2.0-flash') :
+def askAI(prompt, model='gemini-2.0-flash-thinking-exp-1219') :
   model = genai.GenerativeModel(model)
   response = model.generate_content(prompt)
 
