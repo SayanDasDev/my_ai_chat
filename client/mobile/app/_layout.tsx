@@ -68,6 +68,7 @@ function RootLayoutNav() {
             headerShown: false,
           }}
         />
+
         <Stack.Screen
           name="(tabs)"
           options={{
@@ -78,7 +79,7 @@ function RootLayoutNav() {
         <Stack.Screen
           name="modal"
           options={{
-            title: "Tamagui + Expo",
+            title: "Chats",
             headerShown: false,
             presentation: "modal",
             animation: "slide_from_left",

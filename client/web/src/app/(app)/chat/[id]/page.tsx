@@ -7,6 +7,7 @@ import {
   ChatBubbleMessage,
 } from "@/components/ui/chat/chat-bubble";
 import { ChatMessageList } from "@/components/ui/chat/chat-message-list";
+import { useFirstMessage } from "@/hooks/use-first-message";
 import { useUserStore } from "@/hooks/use-user-store";
 import { queryKeyStore } from "@/lib/query-key-store";
 import { useChatId } from "@/lib/utils";
@@ -14,7 +15,7 @@ import { messageQuery } from "@/queries/message-queries";
 import { Message } from "@/types/message";
 import { useQuery } from "@tanstack/react-query";
 import { Copy, Edit, RefreshCcw, Trash2 } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 import Markdown from "react-markdown";
 
 function ChatPage() {
@@ -41,6 +42,15 @@ function ChatPage() {
   ];
 
   const { user } = useUserStore();
+  const { setIsFirstMessage } = useFirstMessage();
+
+  useEffect(() => {
+    if (messages && messages.length === 0) {
+      setIsFirstMessage(true);
+    } else {
+      setIsFirstMessage(false);
+    }
+  }, [messages, setIsFirstMessage]);
 
   const sortedMessages = messages
     ?.slice()

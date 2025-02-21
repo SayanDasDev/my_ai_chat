@@ -1,7 +1,7 @@
 import { Tabs } from "expo-router";
 import { useTheme } from "tamagui";
 
-export default function TabLayout() {
+export default function AuthLayout() {
   const theme = useTheme();
 
   return (

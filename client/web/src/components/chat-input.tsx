@@ -1,5 +1,7 @@
 import { ChatInput as ShadcnChatInput } from "@/components/ui/chat/chat-input";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { useChatStore } from "@/hooks/use-chat-store";
+import { useFirstMessage } from "@/hooks/use-first-message";
 import { queryKeyStore } from "@/lib/query-key-store";
 import { useChatId } from "@/lib/utils";
 import { messageQuery } from "@/queries/message-queries";
@@ -28,10 +30,13 @@ const ChatInput = () => {
   });
 
   const { createMessage } = messageQuery();
+  const { isFirstMessage } = useFirstMessage();
+  const { clearChats } = useChatStore();
 
   const { mutate, isPending } = useMutation({
     mutationKey: [queryKeyStore.createMessage],
-    mutationFn: createMessage,
+    mutationFn: (values: z.infer<typeof sendMessageSchema>) =>
+      createMessage(values, isFirstMessage),
     onMutate: () => {},
     onError: () => {
       toast.error("Something went wrong!");
@@ -40,6 +45,12 @@ const ChatInput = () => {
       queryClient.invalidateQueries({
         queryKey: [queryKeyStore.allMessages, chat_id],
       });
+      if (isFirstMessage) {
+        clearChats();
+        queryClient.invalidateQueries({
+          queryKey: [queryKeyStore.allChats],
+        });
+      }
       form.reset({ chat_id, prompt: "" });
     },
   });

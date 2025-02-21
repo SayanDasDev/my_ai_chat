@@ -9,7 +9,7 @@ export const messageQuery = () => {
   const { accessToken } = useTokenStore.getState()
 
 
-  const createMessage = async (values: z.infer<typeof sendMessageSchema>) => {
+  const createMessage = async (values: z.infer<typeof sendMessageSchema>, isFirstMessage: boolean) => {
 
     await ensureAuthenticated()
 
@@ -19,7 +19,7 @@ export const messageQuery = () => {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(values)
+      body: JSON.stringify({ ...values, generate_chat_name: isFirstMessage })
     })
 
 

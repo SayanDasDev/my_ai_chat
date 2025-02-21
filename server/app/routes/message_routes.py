@@ -15,6 +15,7 @@ def create_message():
 
         chat_id = data.get('chat_id')
         prompt = data.get('prompt')
+        generateChatName = data.get('generate_chat_name')
 
         if not chat_id or not prompt:
             return jsonify({"error": "chat_id, prompt, and response are required"}), 400
@@ -25,6 +26,13 @@ def create_message():
             return jsonify({"error": "Chat not found or does not belong to the user"}), 404
 
         response = askAI(prompt)
+
+        if(generateChatName):
+            chat_name_prompt = f"Please generate a chat name. I asked you this question: ${prompt} and you answered with this response: ${response}. I may ask you more questions on this topic. Please generate a relevent chat name for this conversation. The chat name should not have more than 5 words. Answer with only those 5 words and nothing else."
+            chat_name = askAI(chat_name_prompt)
+            chat = Chat.query.filter_by(id=chat_id, user_id=user_id).first()
+            chat.name = chat_name
+
 
         new_message = Message(chat_id=chat_id, prompt=prompt, response=response)
 
