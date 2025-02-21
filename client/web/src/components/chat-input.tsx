@@ -9,13 +9,14 @@ import { Message } from "@/types/message";
 import { sendMessageSchema } from "@/types/schema/send-message-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CornerDownLeft, Mic, Paperclip } from "lucide-react";
+import { CornerDownLeft, FileText, Mic, Paperclip, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 import LoadingButton from "./ui/loading-button";
 
 const ChatInput = () => {
@@ -28,6 +29,7 @@ const ChatInput = () => {
     defaultValues: {
       chat_id,
       prompt: "",
+      file: undefined,
     },
   });
 
@@ -115,12 +117,36 @@ const ChatInput = () => {
     form.reset({ chat_id, prompt: "" });
   }, [router, form, chat_id]);
 
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleFileButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-auto w-full max-w-screen-lg rounded-lg border bg-muted focus-within:ring-1 focus-within:ring-ring p-1"
+        className="relative mx-auto w-full max-w-screen-lg rounded-lg border bg-muted focus-within:ring-1 focus-within:ring-ring p-1"
       >
+        {form.watch("file") && (
+          <div className="absolute -top-12 rounded-md gap-2 max-w-60 bg-muted border border-muted-foreground/10 px-4 py-2 grid grid-cols-[24px_1fr_12px]">
+            <FileText className="text-muted-foreground" size={24} />
+            <p className="text-ellipsis line-clamp-1">
+              {form.getValues("file")?.name}
+            </p>
+            <Button
+              onClick={() => form.setValue("file", undefined)}
+              className="p-0 h-5 m-auto pt-px"
+              variant={"ghost"}
+            >
+              <X className="text-muted-foreground" size={8} />
+            </Button>
+          </div>
+        )}
+
         <FormField
           control={form.control}
           name="prompt"
@@ -137,12 +163,45 @@ const ChatInput = () => {
           )}
         />
         <div className="flex items-center p-3 pt-0">
-          <Button variant="ghost" size="icon">
+          <FormField
+            control={form.control}
+            name="file"
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            render={({ field: { value, onChange, ...fieldProps } }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    {...fieldProps}
+                    ref={fileInputRef}
+                    type="file"
+                    accept="application/pdf"
+                    className="hidden"
+                    onChange={(event) =>
+                      onChange(event.target.files && event.target.files[0])
+                    }
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="hover:bg-accent-foreground/10"
+            onClick={handleFileButtonClick}
+          >
             <Paperclip className="size-4" />
             <span className="sr-only">Attach file</span>
           </Button>
 
-          <Button variant="ghost" size="icon">
+          <Button
+            type="button"
+            variant="ghost"
+            disabled
+            className="hover:bg-accent-foreground/10"
+            size="icon"
+          >
             <Mic className="size-4" />
             <span className="sr-only">Use Microphone</span>
           </Button>

@@ -2,6 +2,10 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import db, Message, Chat
 from app.services import askAI
+from werkzeug.utils import secure_filename
+import os
+import uuid
+
 
 message_bp = Blueprint('message_bp', __name__)
 
@@ -11,11 +15,29 @@ message_bp = Blueprint('message_bp', __name__)
 def create_message():
     try:
         user_id = get_jwt_identity()
-        data = request.get_json()
+        chat_id = request.form.get('chat_id')
+        prompt = request.form.get('prompt')
+        generateChatName = request.form.get('generate_chat_name')
+        file = request.files.get('file')
 
-        chat_id = data.get('chat_id')
-        prompt = data.get('prompt')
-        generateChatName = data.get('generate_chat_name')
+        upload_folder = os.path.join(os.getcwd(), 'uploads')
+        if not os.path.exists(upload_folder):
+            os.makedirs(upload_folder)
+        if file:
+            filename = secure_filename(file.filename)
+            filename = f"{uuid.uuid4().hex}_{filename}"
+            file.save(os.path.join(upload_folder, filename))
+            print(f"File saved as {filename}")
+
+        # TODO: Deal with file
+        if file:
+            return jsonify({
+            "id": "str(new_message.id)",
+            "chat_id": chat_id,
+            "prompt": prompt,
+            "response": file.name,
+            "created_at": "sdff"
+        }), 201
 
         if not chat_id or not prompt:
             return jsonify({"error": "chat_id, prompt, and response are required"}), 400

@@ -10,25 +10,30 @@ export const messageQuery = () => {
 
 
   const createMessage = async (values: z.infer<typeof sendMessageSchema>, isFirstMessage: boolean) => {
+    await ensureAuthenticated();
 
-    await ensureAuthenticated()
+    const formData = new FormData();
+    formData.append("chat_id", values.chat_id);
+    formData.append("prompt", values.prompt);
+    formData.append("generate_chat_name", String(isFirstMessage));
+    if (values.file) {
+      formData.append("file", values.file);
+    }
 
     const response = await fetch(`${BACKEND_URL}/messages/`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ...values, generate_chat_name: isFirstMessage })
-    })
-
+      body: formData,
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     return response.json();
-  }
+  };
 
 
   const getAllMessages = async (id: string) => {
