@@ -1,0 +1,61 @@
+"use client";
+import Markdown from "react-markdown";
+import rehypeHighlight from "rehype-highlight";
+import rehypeKatex from "rehype-katex";
+import remarkGfm from "remark-gfm";
+import { Table, TableHead, TableHeader, TableRow } from "./ui/table";
+
+const MarkdownResponse = ({ children }: { children: string }) => {
+  return (
+    <Markdown
+      remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeHighlight, rehypeKatex]}
+      components={{
+        table: ({ ...props }) => <Table {...props} />,
+        thead: ({ ...props }) => <TableHeader {...props} />,
+        tr: ({ ...props }) => <TableRow {...props} />,
+        td: ({ ...props }) => <TableHead {...props} />,
+        // code: ({ children, className, ...props }) => {
+        //   const match = /language-(\w+)/.exec(className || "");
+        //   return match ? (
+        //     <CodeBlock
+        //       language={match[1]}
+        //       code={String(children).replace(/\n$/, "")}
+        //     />
+        //   ) : (
+        //     <code
+        //       className="bg-muted text-sidebar-accent-foreground font-thin border rounded-sm px-2 py-px"
+        //       {...props}
+        //     >
+        //       {children}
+        //     </code>
+        //   );
+        // },
+        code: ({ ...props }) => (
+          <code
+            className="bg-muted text-sidebar-accent-foreground font-thin border rounded-sm px-2 py-px"
+            {...props}
+          />
+        ),
+        pre: ({ children, ...props }) => (
+          <pre
+            className="text-sm w-full sm:text-base inline-flex text-left items-center space-x-4 bg-muted text-sidebar-accent-foreground rounded-lg p-4 pl-6"
+            {...props}
+          >
+            <span className="flex gap-4">
+              <span className="shrink-0"></span>
+
+              <span className="flex-1">
+                <span>{children}</span>
+              </span>
+            </span>
+          </pre>
+        ),
+      }}
+    >
+      {children}
+    </Markdown>
+  );
+};
+
+export default MarkdownResponse;

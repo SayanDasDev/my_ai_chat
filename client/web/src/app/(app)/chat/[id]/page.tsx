@@ -1,4 +1,5 @@
 "use client";
+import MarkdownResponse from "@/components/markdown-response";
 import {
   ChatBubble,
   ChatBubbleAction,
@@ -7,6 +8,7 @@ import {
   ChatBubbleMessage,
 } from "@/components/ui/chat/chat-bubble";
 import { ChatMessageList } from "@/components/ui/chat/chat-message-list";
+import { TextShimmer } from "@/components/ui/text-shimmer";
 import { useFirstMessage } from "@/hooks/use-first-message";
 import { useUserStore } from "@/hooks/use-user-store";
 import { queryKeyStore } from "@/lib/query-key-store";
@@ -16,7 +18,6 @@ import { Message } from "@/types/message";
 import { useQuery } from "@tanstack/react-query";
 import { Copy, Edit, RefreshCcw, Trash2 } from "lucide-react";
 import React, { useEffect } from "react";
-import Markdown from "react-markdown";
 
 function ChatPage() {
   const { getAllMessages } = messageQuery();
@@ -102,7 +103,13 @@ function ChatPage() {
               <ChatBubble className="items-end" layout="ai">
                 <ChatBubbleAvatar className="mb-12" fallback={"AI"} />
                 <ChatBubbleMessage>
-                  <Markdown>{message.response}</Markdown>
+                  {message.response === "Thinking..." ? (
+                    <TextShimmer className="font-mono text-sm" duration={1}>
+                      Thinking...
+                    </TextShimmer>
+                  ) : (
+                    <MarkdownResponse>{message.response}</MarkdownResponse>
+                  )}
                   <div className="mt-2 h-[25.5px]">
                     {responseActionIcons.map(({ icon: Icon, type }) => (
                       <ChatBubbleAction

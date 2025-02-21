@@ -5,6 +5,7 @@ import { useFirstMessage } from "@/hooks/use-first-message";
 import { queryKeyStore } from "@/lib/query-key-store";
 import { useChatId } from "@/lib/utils";
 import { messageQuery } from "@/queries/message-queries";
+import { Message } from "@/types/message";
 import { sendMessageSchema } from "@/types/schema/send-message-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -38,21 +39,56 @@ const ChatInput = () => {
     mutationKey: [queryKeyStore.createMessage],
     mutationFn: (values: z.infer<typeof sendMessageSchema>) =>
       createMessage(values, isFirstMessage),
-    onMutate: () => {},
-    onError: () => {
+    onMutate: async (newMessage) => {
+      await queryClient.cancelQueries({
+        queryKey: [queryKeyStore.allMessages, chat_id],
+      });
+
+      // Snapshot the previous value
+      const previousMessages = queryClient.getQueryData([
+        queryKeyStore.allMessages,
+        chat_id,
+      ]);
+
+      // Optimistically update to the new value
+      queryClient.setQueryData(
+        [queryKeyStore.allMessages, chat_id],
+        (old: Message[]) => [
+          ...old,
+          {
+            id: "**",
+            chat_id: newMessage.chat_id,
+            prompt: newMessage.prompt,
+            response: "Thinking...",
+            created_at: Date.now,
+          },
+        ]
+      );
+
+      // Return a context object with the snapshotted value
+      return { previousMessages };
+    },
+    onError: (err, newMessage, context) => {
       toast.error("Something went wrong!");
+      queryClient.setQueryData(
+        [queryKeyStore.allMessages, chat_id],
+        context?.previousMessages
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [queryKeyStore.allMessages, chat_id],
       });
-      if (isFirstMessage) {
-        clearChats();
-        queryClient.invalidateQueries({
-          queryKey: [queryKeyStore.allChats],
-        });
-      }
+      clearChats();
+      queryClient.invalidateQueries({
+        queryKey: [queryKeyStore.allChats],
+      });
       form.reset({ chat_id, prompt: "" });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeyStore.allMessages, chat_id],
+      });
     },
   });
 
