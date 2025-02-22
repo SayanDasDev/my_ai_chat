@@ -1,15 +1,10 @@
 import { ChatInput as ShadcnChatInput } from "@/components/ui/chat/chat-input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { useChatStore } from "@/hooks/use-chat-store";
 import { useFirstMessage } from "@/hooks/use-first-message";
+import { usePastAware } from "@/hooks/use-past-aware";
 import { queryKeyStore } from "@/lib/query-key-store";
-import { cn, useChatId } from "@/lib/utils";
+import { useChatId } from "@/lib/utils";
 import { messageQuery } from "@/queries/message-queries";
 import { Message } from "@/types/message";
 import { sendMessageSchema } from "@/types/schema/send-message-schema";
@@ -24,12 +19,13 @@ import { z } from "zod";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import LoadingButton from "./ui/loading-button";
-import { Switch } from "./ui/switch";
 
 const ChatInput = () => {
   const chat_id = useChatId();
 
   const queryClient = useQueryClient();
+
+  const { isPastAware, setIsPastAware } = usePastAware();
 
   const form = useForm<z.infer<typeof sendMessageSchema>>({
     resolver: zodResolver(sendMessageSchema),
@@ -37,7 +33,7 @@ const ChatInput = () => {
       chat_id,
       prompt: "",
       file: undefined,
-      remember_past: true,
+      remember_past: isPastAware,
     },
   });
 
@@ -116,6 +112,7 @@ const ChatInput = () => {
 
   function onSubmit(values: z.infer<typeof sendMessageSchema>) {
     mutate(values);
+    console.log(values);
   }
 
   useEffect(() => {
@@ -134,6 +131,17 @@ const ChatInput = () => {
   useEffect(() => {
     form.reset({ chat_id, prompt: "" });
   }, [router, form, chat_id]);
+
+  const hasFile = !!form.watch("file");
+
+  useEffect(() => {
+    if (isPastAware) form.setValue("file", undefined);
+    form.setValue("remember_past", isPastAware);
+  }, [isPastAware, form]);
+
+  useEffect(() => {
+    setIsPastAware(!hasFile);
+  }, [hasFile, setIsPastAware, form]);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -207,7 +215,7 @@ const ChatInput = () => {
             variant="ghost"
             size="icon"
             className="hover:bg-accent-foreground/10"
-            disabled={form.watch("remember_past")}
+            // disabled={form.watch("remember_past")}
             onClick={handleFileButtonClick}
           >
             <Paperclip className="size-4" />
@@ -224,7 +232,7 @@ const ChatInput = () => {
             <Mic className="size-4" />
             <span className="sr-only">Use Microphone</span>
           </Button>
-          <FormField
+          {/* <FormField
             control={form.control}
             name="remember_past"
             render={({ field }) => (
@@ -249,7 +257,7 @@ const ChatInput = () => {
                 </FormControl>
               </FormItem>
             )}
-          />
+          /> */}
 
           <LoadingButton
             isLoading={isPending}
