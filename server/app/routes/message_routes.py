@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import db, Message, Chat
-from app.services import askAI, askAiWithFile
+from app.services import askAI, askAiWithFile, askAiWithPast
 from werkzeug.utils import secure_filename
 import os
 import uuid
@@ -18,6 +18,7 @@ def create_message():
         chat_id = request.form.get('chat_id')
         prompt = request.form.get('prompt')
         generateChatName = request.form.get('generate_chat_name')
+        rememberPast = request.form.get('remember_past')
         file = request.files.get('file')
 
         if not chat_id or not prompt:
@@ -41,6 +42,8 @@ def create_message():
 
             response = f"*#FILE=${filename}#" + askAiWithFile(prompt=prompt, filepath=filepath)
 
+        elif rememberPast == "true":
+            response = askAiWithPast(prompt, user_id)
         else:
             response = askAI(prompt)
 

@@ -1,9 +1,15 @@
 import { ChatInput as ShadcnChatInput } from "@/components/ui/chat/chat-input";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
 import { useChatStore } from "@/hooks/use-chat-store";
 import { useFirstMessage } from "@/hooks/use-first-message";
 import { queryKeyStore } from "@/lib/query-key-store";
-import { useChatId } from "@/lib/utils";
+import { cn, useChatId } from "@/lib/utils";
 import { messageQuery } from "@/queries/message-queries";
 import { Message } from "@/types/message";
 import { sendMessageSchema } from "@/types/schema/send-message-schema";
@@ -18,6 +24,7 @@ import { z } from "zod";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import LoadingButton from "./ui/loading-button";
+import { Switch } from "./ui/switch";
 
 const ChatInput = () => {
   const chat_id = useChatId();
@@ -30,6 +37,7 @@ const ChatInput = () => {
       chat_id,
       prompt: "",
       file: undefined,
+      remember_past: true,
     },
   });
 
@@ -199,6 +207,7 @@ const ChatInput = () => {
             variant="ghost"
             size="icon"
             className="hover:bg-accent-foreground/10"
+            disabled={form.watch("remember_past")}
             onClick={handleFileButtonClick}
           >
             <Paperclip className="size-4" />
@@ -215,6 +224,32 @@ const ChatInput = () => {
             <Mic className="size-4" />
             <span className="sr-only">Use Microphone</span>
           </Button>
+          <FormField
+            control={form.control}
+            name="remember_past"
+            render={({ field }) => (
+              <FormItem className="">
+                <FormLabel
+                  className={cn(
+                    "inline-flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm  transition-colors hover:bg-accent-foreground/10",
+                    field.value &&
+                      "bg-accent-foreground/10 ring-1 ring-accent-foreground/20 outline-accent-foreground",
+                    !!form.watch("file") && "pointer-events-none opacity-50"
+                  )}
+                >
+                  Past Aware
+                </FormLabel>
+                <FormControl>
+                  <Switch
+                    disabled={!!form.watch("file")}
+                    className="sr-only"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
           <LoadingButton
             isLoading={isPending}

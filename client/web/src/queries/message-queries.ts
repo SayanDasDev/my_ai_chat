@@ -16,6 +16,7 @@ export const messageQuery = () => {
     formData.append("chat_id", values.chat_id);
     formData.append("prompt", values.prompt);
     formData.append("generate_chat_name", String(isFirstMessage));
+    formData.append("remember_past", String(values.remember_past));
     if (values.file) {
       formData.append("file", values.file);
     }

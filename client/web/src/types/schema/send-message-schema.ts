@@ -9,4 +9,5 @@ export const sendMessageSchema = z.object({
   file: z.union([z.instanceof(File), z.undefined()]).optional().refine((file) => !file || file.size < 7000000, {
     message: 'Your file must be less than 7MB.',
   }),
+  remember_past: z.boolean(),
 });
