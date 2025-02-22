@@ -1,10 +1,20 @@
-module.exports = function (api) {
-  api.cache(true);
-  const plugins = [];
-
+module.exports = (api) => {
+  api.cache(true)
   return {
-    presets: [['babel-preset-expo', { jsxImportSource: 'nativewind' }], 'nativewind/babel'],
+    presets: [['babel-preset-expo', { jsxRuntime: 'automatic' }]],
+    plugins: [
+      [
+        '@tamagui/babel-plugin',
+        {
+          components: ['tamagui'],
+          config: './tamagui.config.ts',
+          logTimings: true,
+          disableExtraction: process.env.NODE_ENV === 'development',
+        },
+      ],
 
-    plugins,
-  };
-};
+      // NOTE: this is only necessary if you are using reanimated for animations
+      'react-native-reanimated/plugin',
+    ],
+  }
+}

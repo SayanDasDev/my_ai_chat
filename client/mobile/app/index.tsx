@@ -1,19 +1,9 @@
-import { Stack, Link } from 'expo-router';
+import { H2, YStack } from "tamagui";
 
-import { Button } from '~/components/Button';
-import { Container } from '~/components/Container';
-import { ScreenContent } from '~/components/ScreenContent';
-
-export default function Home() {
+export default function TabOneScreen() {
   return (
-    <>
-      <Stack.Screen options={{ title: 'Home' }} />
-      <Container>
-        <ScreenContent path="app/index.tsx" title="Home" />
-        <Link href={{ pathname: '/details', params: { name: 'Dan' } }} asChild>
-          <Button title="Show Details" />
-        </Link>
-      </Container>
-    </>
+    <YStack flex={1} items="center" gap="$8" px="$10" pt="$5" bg="$background">
+      <H2>Tamagui + Expo</H2>
+    </YStack>
   );
 }
