@@ -23,65 +23,13 @@ const NavChats = () => {
     if (chatdata) {
       setChats(chatdata);
     }
-  }, [chatdata, setChats]);
+  }, [chatdata, setChats, chats]);
 
   return (
-    // <SidebarGroup>
-    //   <SidebarGroupLabel>Projects</SidebarGroupLabel>
     <SidebarMenu className="mt-16">
       {isLoading && "Loading..."}
-      {/* {!isLoading &&
-        chats?.map((item) => (
-          <SidebarMenuItem key={item.id}>
-            <SidebarMenuButton
-              className={cn(
-                pathname.includes(item.id) &&
-                  "bg-sidebar-accent/50 text-sidebar-accent-foreground"
-              )}
-              asChild
-            >
-              <a href={`/chat/${item.id}`}>
-                <span>{item.name}</span>
-              </a>
-            </SidebarMenuButton>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuAction showOnHover>
-                  <MoreHorizontal />
-                  <span className="sr-only">More</span>
-                </SidebarMenuAction>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-48 rounded-lg"
-                side={isMobile ? "bottom" : "right"}
-                align={isMobile ? "end" : "start"}
-              >
-                <DropdownMenuItem>
-                  <Pen className="text-muted-foreground" />
-                  <span>Edit Name</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Forward className="text-muted-foreground" />
-                  <span>Share Chat</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Trash2 className="text-muted-foreground" />
-                  <span>Delete Chat</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        ))} */}
-      {!isLoading && chats && <DataTable data={chats} />}
-      {/* <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
-            <MoreHorizontal className="text-sidebar-foreground/70" />
-            <span>More</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem> */}
+      {chats && <DataTable data={chats} />}
     </SidebarMenu>
-    // </SidebarGroup>
   );
 };
 

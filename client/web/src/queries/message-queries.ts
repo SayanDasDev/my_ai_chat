@@ -32,7 +32,10 @@ export const messageQuery = () => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return response.json();
+    if (isFirstMessage)
+
+
+      return response.json();
   };
 
 

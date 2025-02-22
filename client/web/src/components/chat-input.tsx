@@ -10,7 +10,7 @@ import { sendMessageSchema } from "@/types/schema/send-message-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CornerDownLeft, FileText, Mic, Paperclip, X } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -37,6 +37,9 @@ const ChatInput = () => {
   const { isFirstMessage } = useFirstMessage();
   const { clearChats } = useChatStore();
 
+  const pathname = usePathname();
+  const router = useRouter();
+
   const { mutate, isPending } = useMutation({
     mutationKey: [queryKeyStore.createMessage],
     mutationFn: (values: z.infer<typeof sendMessageSchema>) =>
@@ -52,21 +55,30 @@ const ChatInput = () => {
         chat_id,
       ]);
 
+      let msg_length;
+
       // Optimistically update to the new value
       queryClient.setQueryData(
         [queryKeyStore.allMessages, chat_id],
-        (old: Message[]) => [
-          ...old,
-          {
-            id: "**",
-            chat_id: newMessage.chat_id,
-            prompt: newMessage.prompt,
-            response: "Thinking...",
-            created_at: Date.now,
-          },
-        ]
+        (old: Message[]) => {
+          msg_length = old.length;
+
+          return [
+            ...old,
+            {
+              id: "**",
+              chat_id: newMessage.chat_id,
+              prompt: newMessage.prompt,
+              response: "Thinking...",
+              created_at: Date.now,
+            },
+          ];
+        }
       );
 
+      const url = pathname + `#latest-${msg_length}`;
+
+      router.replace(url);
       // Return a context object with the snapshotted value
       return { previousMessages };
     },
@@ -81,11 +93,11 @@ const ChatInput = () => {
       queryClient.invalidateQueries({
         queryKey: [queryKeyStore.allMessages, chat_id],
       });
+      form.reset({ chat_id, prompt: "" });
       clearChats();
       queryClient.invalidateQueries({
         queryKey: [queryKeyStore.allChats],
       });
-      form.reset({ chat_id, prompt: "" });
     },
     onSettled: () => {
       queryClient.invalidateQueries({
@@ -110,8 +122,6 @@ const ChatInput = () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [form]);
-
-  const router = useRouter();
 
   useEffect(() => {
     form.reset({ chat_id, prompt: "" });

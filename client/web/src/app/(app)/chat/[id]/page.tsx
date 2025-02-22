@@ -12,7 +12,7 @@ import { TextShimmer } from "@/components/ui/text-shimmer";
 import { useFirstMessage } from "@/hooks/use-first-message";
 import { useUserStore } from "@/hooks/use-user-store";
 import { queryKeyStore } from "@/lib/query-key-store";
-import { parseResponsePattern, useChatId } from "@/lib/utils";
+import { cn, parseResponsePattern, useChatId } from "@/lib/utils";
 import { messageQuery } from "@/queries/message-queries";
 import { Message } from "@/types/message";
 import { useQuery } from "@tanstack/react-query";
@@ -77,6 +77,7 @@ function ChatPage() {
           );
           return (
             <React.Fragment key={message.id}>
+              <section id={`latest-${index}`} />
               {filename && (
                 <div className="ml-auto mr-14 translate-y-4 rounded-md gap-2 max-w-60 bg-muted border border-muted-foreground/10 px-4 py-2 grid grid-cols-[24px_1fr]">
                   <FileText className="text-muted-foreground" size={24} />
@@ -109,8 +110,14 @@ function ChatPage() {
                   ))}
                 </ChatBubbleActionWrapper>
               </ChatBubble>
-              <ChatBubble className="items-end" layout="ai">
-                <ChatBubbleAvatar className="mb-12" fallback={"AI"} />
+              <ChatBubble
+                className={cn(
+                  "items-start",
+                  message.response === "Thinking..." && "h-[calc(100dvh-284px)]"
+                )}
+                layout="ai"
+              >
+                <ChatBubbleAvatar className="mt-4" fallback={"AI"} />
                 <ChatBubbleMessage className="w-[calc(100%-40px)] ">
                   {message.response === "Thinking..." ? (
                     <TextShimmer className="font-mono text-sm" duration={1}>
