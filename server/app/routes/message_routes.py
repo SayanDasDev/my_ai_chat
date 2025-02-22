@@ -48,7 +48,12 @@ def create_message():
             response = askAI(prompt)
 
         if(generateChatName == "true"):
-            chat_name_prompt = f"Please generate a chat name. I asked you this question: ${prompt} and you answered with this response: ${response}. I may ask you more questions on this topic. Please generate a relevent chat name for this conversation. The chat name should not have more than 5 words. Answer with only those 5 words and nothing else."
+            chat_name_prompt = f"""
+            Please generate a chat name based on the following conversation:
+            Question: {prompt}
+            Answer: {response}
+            The chat name should be relevant to the topic and not exceed 5 words. Provide only the chat name.
+            """
             chat_name = askAI(chat_name_prompt)
             chat = Chat.query.filter_by(id=chat_id, user_id=user_id).first()
             chat.name = chat_name

@@ -6,14 +6,30 @@ from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_text_splitters import NLTKTextSplitter
 from langchain_community.vectorstores import Chroma
-from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
-from app.models import Chat, Message  # Import your database models
+from app.models import User, Chat, Message, ConversationContext  # Import your database models
 from app.extensions import db  # Import your database extension
 
 load_dotenv()
+
+def get_conversation_context(user_id: int) -> str:
+    contexts = ConversationContext.query.filter_by(user_id=user_id).order_by(ConversationContext.created_at.desc()).limit(20).all()
+    return "\n".join(context.context for context in reversed(contexts))
+
+def save_conversation_context(user_id: int, context: str):
+    new_context = ConversationContext(user_id=user_id, context=context)
+    db.session.add(new_context)
+    db.session.commit()
+
+    # Delete older contexts if more than 20 exist
+    contexts = ConversationContext.query.filter_by(user_id=user_id).order_by(ConversationContext.created_at.desc()).all()
+    if len(contexts) > 20:
+        for context in contexts[20:]:
+            db.session.delete(context)
+        db.session.commit()
 
 def askAiWithPast(prompt: str, user_id: int, modelname: str = "gemini-2.0-flash-thinking-exp-1219") -> str:
     """
@@ -25,7 +41,7 @@ def askAiWithPast(prompt: str, user_id: int, modelname: str = "gemini-2.0-flash-
     - modelname (str): Gemini AI model to use (default: "gemini-2.0-flash-thinking-exp-1219").
 
     Returns:
-    - str: The AI response in Markdown format.
+    - str: The AI response in plain text format.
     """
     # Get API Key from environment variable
     api_key = os.getenv("GEMINI_API_KEY")
@@ -35,6 +51,8 @@ def askAiWithPast(prompt: str, user_id: int, modelname: str = "gemini-2.0-flash-
     print("With past:")
 
     # Query the database for the user's chats and messages
+    user = User.query.get(user_id)
+    user_name = user.username if user else "User"
     user_chats = Chat.query.filter_by(user_id=user_id).all()
     user_messages = Message.query.filter(Message.chat_id.in_([chat.id for chat in user_chats])).all()
 
@@ -58,11 +76,13 @@ def askAiWithPast(prompt: str, user_id: int, modelname: str = "gemini-2.0-flash-
 
     # Define chat template
     chat_template = ChatPromptTemplate.from_messages([
+                SystemMessagePromptTemplate.from_template(f"""
+                You are an AI assistant. Answer the user's questions based on the given context. The user's name is {user_name}. Be concise and provide accurate information.
+                """),
         HumanMessagePromptTemplate.from_template("""
-        Answer the question based on the given context.
         Context: {context}
         Question: {question}
-        Answer: """)
+        Answer (in plain text format): """)
     ])
 
     # Define AI model
@@ -81,6 +101,22 @@ def askAiWithPast(prompt: str, user_id: int, modelname: str = "gemini-2.0-flash-
         | output_parser
     )
 
+    # Retrieve the conversation context from the database
+    conversation_context = get_conversation_context(user_id)
+
+    # Add the current prompt to the conversation context
+    conversation_context += f"User: {prompt}\n"
+
+    # Concatenate the conversation context into a single string
+    full_prompt = conversation_context
+
     # Invoke the model with the user prompt
-    response = rag_chain.invoke(prompt)
+    response = rag_chain.invoke(full_prompt)
+
+    # Add the AI response to the conversation context
+    conversation_context += f"AI: {response.strip()}\n"
+
+    # Save the updated conversation context to the database
+    save_conversation_context(user_id, conversation_context)
+
     return response.strip()
