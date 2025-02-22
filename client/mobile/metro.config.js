@@ -1,22 +1,18 @@
-// Learn more https://docs.expo.io/guides/customizing-metro
+const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
+
+const {
+  wrapWithReanimatedMetroConfig,
+} = require('react-native-reanimated/metro-config');
+
 /**
- * @type {import('expo/metro-config').MetroConfig}
+ * Metro configuration
+ * https://reactnative.dev/docs/metro
+ *
+ * @type {import('@react-native/metro-config').MetroConfig}
  */
-const { getDefaultConfig } = require('expo/metro-config')
+const config = {};
 
-const config = getDefaultConfig(__dirname, {
-  // [Web-only]: Enables CSS support in Metro.
-  isCSSEnabled: true,
-})
-
-// Enable Tamagui and add nice web support with optimizing compiler + CSS extraction
-const { withTamagui } = require('@tamagui/metro-plugin')
-module.exports = withTamagui(config, {
-  components: ['tamagui'],
-  config: './tamagui.config.ts',
-  outputCSS: './tamagui-web.css',
-})
-
-config.resolver.sourceExts.push('mjs')
-
-module.exports = config
+module.exports = mergeConfig(
+  getDefaultConfig(__dirname),
+  wrapWithReanimatedMetroConfig(config),
+);
