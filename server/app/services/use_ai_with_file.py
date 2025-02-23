@@ -7,20 +7,24 @@ from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmb
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import NLTKTextSplitter
 from langchain_community.vectorstores import Chroma
-from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
+from app.models import User  # Import your database models
+
+
 load_dotenv()
 
-
-def askAiWithFile(prompt: str, filepath: str, modelname: str = "gemini-2.0-flash-thinking-exp-1219") -> str:
+def askAiWithFile(prompt: str, filepath: str, filename: str, user_id: str, modelname: str = "gemini-2.0-flash-thinking-exp-1219") -> str:
     """
     Loads a PDF file, extracts text, creates embeddings, and queries Gemini AI using the provided prompt.
 
     Parameters:
     - prompt (str): The user query.
     - filepath (str): Path to the PDF file.
+    - filename (str): Name of the file.
+    - user_id (str): Name of the user.
     - modelname (str): Gemini AI model to use (default: "gemini-2.0-flash-thinking-exp-1219").
 
     Returns:
@@ -45,10 +49,15 @@ def askAiWithFile(prompt: str, filepath: str, modelname: str = "gemini-2.0-flash
     db.persist()
     retriever = db.as_retriever(search_kwargs={"k": 5})
 
+    user = User.query.get(user_id)
+    user_name = user.username if user else "User"
+
     # Define chat template
     chat_template = ChatPromptTemplate.from_messages([
+        SystemMessagePromptTemplate.from_template(f"""
+        You are an AI assistant. Answer the user's questions only based on the given context. You can use your knowledge only if the context matches with the question. If the question is out of context. Answer with I did not find anything relevant in the given pdf. The user's name is {user_name}. The pdf file name is {filename}. Be concise and provide accurate information.
+        """),
         HumanMessagePromptTemplate.from_template("""
-        Answer the question based on the given context.
         Context: {context}
         Question: {question}
         Answer (in Markdown format): """)
