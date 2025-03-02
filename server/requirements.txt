@@ -11,6 +11,7 @@ flask_jwt_extended
 
 google-generativeai
 ollama
+langchain_chroma
 
 sentence-transformers
 ctransformers

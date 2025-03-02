@@ -6,13 +6,12 @@ from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import NLTKTextSplitter
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
 from app.models import User  # Import your database models
-
 
 load_dotenv()
 
@@ -35,18 +34,26 @@ def askAiWithFile(prompt: str, filepath: str, filename: str, user_id: str, model
     if not api_key:
         raise ValueError("Missing GOOGLE_API_KEY in environment variables.")
 
-    # Load the document
-    loader = PyPDFLoader(filepath)
-    pages = loader.load_and_split()
+    # Define the path for the persisted embeddings
+    persist_directory = f"./chroma_db/{user_id}_{filename}"
 
-    # Split text into chunks
-    text_splitter = NLTKTextSplitter(chunk_size=500, chunk_overlap=100)
-    chunks = text_splitter.split_documents(pages)
+    # Check if embeddings already exist
+    if os.path.exists(persist_directory):
+        db = Chroma(persist_directory=persist_directory, embedding_function=GoogleGenerativeAIEmbeddings(google_api_key=api_key, model="models/embedding-001"))
+    else:
+        # Load the document
+        loader = PyPDFLoader(filepath)
+        pages = loader.load_and_split()
 
-    # Generate embeddings
-    embedding_model = GoogleGenerativeAIEmbeddings(google_api_key=api_key, model="models/embedding-001")
-    db = Chroma.from_documents(chunks, embedding_model, persist_directory="./chroma_db")
-    db.persist()
+        # Split text into chunks
+        text_splitter = NLTKTextSplitter(chunk_size=500, chunk_overlap=100)
+        chunks = text_splitter.split_documents(pages)
+
+        # Generate embeddings
+        embedding_model = GoogleGenerativeAIEmbeddings(google_api_key=api_key, model="models/embedding-001")
+        db = Chroma.from_documents(chunks, embedding_model, persist_directory=persist_directory)
+        db.persist()
+
     retriever = db.as_retriever(search_kwargs={"k": 5})
 
     user = User.query.get(user_id)
@@ -60,7 +67,7 @@ def askAiWithFile(prompt: str, filepath: str, filename: str, user_id: str, model
         HumanMessagePromptTemplate.from_template("""
         Context: {context}
         Question: {question}
-        Answer (in Markdown format): """)
+        Answer (in text format): """)
     ])
 
     # Define AI model

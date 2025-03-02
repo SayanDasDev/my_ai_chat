@@ -1,7 +1,6 @@
 "use client";
 import ChatInput from "@/components/chat-input";
 import FullScreenLoading from "@/components/full-screen-loading";
-import ModelSelector from "@/components/model-selector";
 import { AppSidebar } from "@/components/ui/app-sidebar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -75,7 +74,7 @@ export default function AuthLayout({
                   </Tooltip>
                 </TooltipProvider>
                 <Separator orientation="vertical" className="mr-2 h-4" />
-                <ModelSelector />
+                {/* <ModelSelector /> */}
                 {/* <PastAwareSwitch /> */}
               </div>
               <Button variant={"ghost"}>

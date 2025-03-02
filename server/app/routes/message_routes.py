@@ -42,7 +42,7 @@ def create_message():
 
             filepath = upload_folder + "/" + filename
 
-            response = f"*#FILE=${filename}#" + askAiWithFile(prompt=prompt, filename=file.filename, filepath=filepath)
+            response = f"*#FILE=${filename}#" + askAiWithFile(prompt=prompt, filename=file.filename, filepath=filepath, user_id=user_id)
 
         elif rememberPast == "true":
             response = askAiWithPast(prompt, user_id)

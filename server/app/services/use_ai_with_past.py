@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_text_splitters import NLTKTextSplitter
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
@@ -71,7 +71,7 @@ def askAiWithPast(prompt: str, user_id: int, modelname: str = "gemini-2.0-flash-
     # Generate embeddings
     embedding_model = GoogleGenerativeAIEmbeddings(google_api_key=api_key, model="models/embedding-001")
     db = Chroma.from_texts(chunks, embedding_model, persist_directory="./chroma_db")
-    db.persist()
+    # db.persist()
     retriever = db.as_retriever(search_kwargs={"k": 5})
 
     # Define chat template
