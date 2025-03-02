@@ -1,10 +1,15 @@
 import { ChatInput as ShadcnChatInput } from "@/components/ui/chat/chat-input";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
 import { useChatStore } from "@/hooks/use-chat-store";
 import { useFirstMessage } from "@/hooks/use-first-message";
-import { usePastAware } from "@/hooks/use-past-aware";
 import { queryKeyStore } from "@/lib/query-key-store";
-import { useChatId } from "@/lib/utils";
+import { cn, useChatId } from "@/lib/utils";
 import { messageQuery } from "@/queries/message-queries";
 import { Message } from "@/types/message";
 import { sendMessageSchema } from "@/types/schema/send-message-schema";
@@ -19,13 +24,19 @@ import { z } from "zod";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import LoadingButton from "./ui/loading-button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Switch } from "./ui/switch";
 
 const ChatInput = () => {
   const chat_id = useChatId();
 
   const queryClient = useQueryClient();
-
-  const { isPastAware, setIsPastAware } = usePastAware();
 
   const form = useForm<z.infer<typeof sendMessageSchema>>({
     resolver: zodResolver(sendMessageSchema),
@@ -33,7 +44,8 @@ const ChatInput = () => {
       chat_id,
       prompt: "",
       file: undefined,
-      remember_past: isPastAware,
+      remember_past: false,
+      model: "deepseek",
     },
   });
 
@@ -87,7 +99,8 @@ const ChatInput = () => {
       return { previousMessages };
     },
     onError: (err, newMessage, context) => {
-      toast.error("Something went wrong!");
+      console.log(err);
+      toast.error("Something went wrongs!");
       queryClient.setQueryData(
         [queryKeyStore.allMessages, chat_id],
         context?.previousMessages
@@ -131,17 +144,6 @@ const ChatInput = () => {
   useEffect(() => {
     form.reset({ chat_id, prompt: "" });
   }, [router, form, chat_id]);
-
-  const hasFile = !!form.watch("file");
-
-  useEffect(() => {
-    if (isPastAware) form.setValue("file", undefined);
-    form.setValue("remember_past", isPastAware);
-  }, [isPastAware, form]);
-
-  useEffect(() => {
-    setIsPastAware(!hasFile);
-  }, [hasFile, setIsPastAware, form]);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -188,7 +190,7 @@ const ChatInput = () => {
             </FormItem>
           )}
         />
-        <div className="flex items-center p-3 pt-0">
+        <div className="flex items-center p-3 pt-0 gap-px">
           <FormField
             control={form.control}
             name="file"
@@ -215,7 +217,7 @@ const ChatInput = () => {
             variant="ghost"
             size="icon"
             className="hover:bg-accent-foreground/10"
-            // disabled={form.watch("remember_past")}
+            disabled={form.watch("remember_past")}
             onClick={handleFileButtonClick}
           >
             <Paperclip className="size-4" />
@@ -232,7 +234,7 @@ const ChatInput = () => {
             <Mic className="size-4" />
             <span className="sr-only">Use Microphone</span>
           </Button>
-          {/* <FormField
+          <FormField
             control={form.control}
             name="remember_past"
             render={({ field }) => (
@@ -257,7 +259,30 @@ const ChatInput = () => {
                 </FormControl>
               </FormItem>
             )}
-          /> */}
+          />
+
+          <FormField
+            control={form.control}
+            name="model"
+            render={({ field }) => (
+              <FormItem>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select model" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="deepseek">DeepSeek R1</SelectItem>
+                    <SelectItem value="gemini">Gemini 2.0 Flash</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormItem>
+            )}
+          />
 
           <LoadingButton
             isLoading={isPending}

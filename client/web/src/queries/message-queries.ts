@@ -15,6 +15,7 @@ export const messageQuery = () => {
     const formData = new FormData();
     formData.append("chat_id", values.chat_id);
     formData.append("prompt", values.prompt);
+    formData.append("model", values.model);
     formData.append("generate_chat_name", String(isFirstMessage));
     formData.append("remember_past", String(values.remember_past));
     if (values.file) {
@@ -30,6 +31,7 @@ export const messageQuery = () => {
     });
 
     if (!response.ok) {
+      console.log(response.status)
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 

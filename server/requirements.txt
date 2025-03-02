@@ -10,6 +10,7 @@ python-dotenv         # If using environment variables
 flask_jwt_extended
 
 google-generativeai
+ollama
 
 sentence-transformers
 ctransformers

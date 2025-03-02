@@ -91,3 +91,14 @@ export function parseResponsePattern(input: string): { filename: string | null, 
     return { filename: null, restOfString: input };
   }
 }
+
+export function extractThoughtAndRest(input: string) {
+  const thoughtMatch = input.match(/<think>([\s\S]*?)<\/think>/);
+  const thoughtContent = thoughtMatch ? thoughtMatch[1].trim() : "";
+  const restContent = thoughtMatch ? input.replace(thoughtMatch[0], "").trim() : input.trim();
+
+  if (thoughtContent === "")
+    return { thought: null, rest: restContent }
+
+  return { thought: thoughtContent, rest: restContent };
+}

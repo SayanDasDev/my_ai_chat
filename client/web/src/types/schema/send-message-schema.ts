@@ -10,4 +10,5 @@ export const sendMessageSchema = z.object({
     message: 'Your file must be less than 7MB.',
   }),
   remember_past: z.boolean(),
+  model: z.enum(["deepseek", "gemini"]),
 });

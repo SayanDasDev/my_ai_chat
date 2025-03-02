@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import db, Message, Chat
-from app.services import askAI, askAiWithFile, askAiWithPast
+from app.services import askAI, askAiWithFile, askAiWithPast, askLocalAI
 from werkzeug.utils import secure_filename
 import os
 import uuid
@@ -19,6 +19,7 @@ def create_message():
         prompt = request.form.get('prompt')
         generateChatName = request.form.get('generate_chat_name')
         rememberPast = request.form.get('remember_past')
+        model = request.form.get('model')
         file = request.files.get('file')
 
         if not chat_id or not prompt:
@@ -28,6 +29,7 @@ def create_message():
         chat = Chat.query.filter_by(id=chat_id, user_id=user_id).first()
         if not chat:
             return jsonify({"error": "Chat not found or does not belong to the user"}), 404
+
 
         upload_folder = os.path.join(os.getcwd(), 'uploads')
         if not os.path.exists(upload_folder):
@@ -45,7 +47,10 @@ def create_message():
         elif rememberPast == "true":
             response = askAiWithPast(prompt, user_id)
         else:
-            response = askAI(prompt)
+            if model == "deepseek":
+                response = askLocalAI(prompt)
+            else:
+                response = askAI(prompt)
 
         if(generateChatName == "true"):
             chat_name_prompt = f"""

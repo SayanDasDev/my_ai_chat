@@ -12,7 +12,12 @@ import { TextShimmer } from "@/components/ui/text-shimmer";
 import { useFirstMessage } from "@/hooks/use-first-message";
 import { useUserStore } from "@/hooks/use-user-store";
 import { queryKeyStore } from "@/lib/query-key-store";
-import { cn, parseResponsePattern, useChatId } from "@/lib/utils";
+import {
+  cn,
+  extractThoughtAndRest,
+  parseResponsePattern,
+  useChatId,
+} from "@/lib/utils";
 import { messageQuery } from "@/queries/message-queries";
 import { Message } from "@/types/message";
 import { useQuery } from "@tanstack/react-query";
@@ -72,9 +77,13 @@ function ChatPage() {
         messages &&
         messages.length > 0 &&
         sortedMessages?.map((message, index) => {
-          const { filename, restOfString: response } = parseResponsePattern(
+          const { filename, restOfString } = parseResponsePattern(
             message.response
           );
+
+          const { thought, rest: response } =
+            extractThoughtAndRest(restOfString);
+
           return (
             <React.Fragment key={message.id}>
               <section id={`latest-${index}`} />
@@ -124,7 +133,19 @@ function ChatPage() {
                       Thinking...
                     </TextShimmer>
                   ) : (
-                    <MarkdownResponse>{response}</MarkdownResponse>
+                    <div className="flex flex-col gap-2">
+                      {thought && (
+                        <div className="text-xs text-muted-foreground">
+                          <div className="text-sm text-foreground">
+                            Thoughts:
+                          </div>
+                          <div className="pl-2">
+                            <MarkdownResponse>{thought}</MarkdownResponse>
+                          </div>
+                        </div>
+                      )}
+                      <MarkdownResponse>{response}</MarkdownResponse>
+                    </div>
                   )}
                   <div className="mt-2 h-[25.5px]">
                     {responseActionIcons.map(({ icon: Icon, type }) => (
