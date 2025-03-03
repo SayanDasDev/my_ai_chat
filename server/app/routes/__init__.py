@@ -7,5 +7,6 @@ main_bp = Blueprint('main', __name__)
 from .user_routes import user_bp
 from .chat_routes import chat_bp
 from .message_routes import message_bp
+from .feedback_routes import feedback_bp
 
 # This allows the main app to import routes easily

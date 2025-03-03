@@ -1,3 +1,4 @@
+
 export const queryKeyStore = {
   registerUser: "register-user",
   logIn: "login",
@@ -7,5 +8,8 @@ export const queryKeyStore = {
   allChats: "get-all-chats",
   deleteChat: "delete-chat",
   allMessages: "get-all-messages",
-  createMessage: "create-message"
+  createMessage: "create-message",
+  topMessages: "get-top-messages",
+  bottomMessages: "get-bottom-messages",
+  createFeedback: "create-feedback",
 }

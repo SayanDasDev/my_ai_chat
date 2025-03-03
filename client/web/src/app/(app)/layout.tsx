@@ -1,6 +1,8 @@
 "use client";
+import BottomMessagesBtn from "@/components/bottom-messages-btn";
 import ChatInput from "@/components/chat-input";
 import FullScreenLoading from "@/components/full-screen-loading";
+import TopMessagesBtn from "@/components/top-messages-btn";
 import { AppSidebar } from "@/components/ui/app-sidebar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -76,6 +78,8 @@ export default function AuthLayout({
                 <Separator orientation="vertical" className="mr-2 h-4" />
                 {/* <ModelSelector /> */}
                 {/* <PastAwareSwitch /> */}
+                <TopMessagesBtn />
+                <BottomMessagesBtn />
               </div>
               <Button variant={"ghost"}>
                 <Share size={4} />
