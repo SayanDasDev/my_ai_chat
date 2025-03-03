@@ -44,7 +44,7 @@ const ChatInput = () => {
       chat_id,
       prompt: "",
       file: undefined,
-      remember_past: false,
+      remember_past: true,
       model: "deepseek",
     },
   });
