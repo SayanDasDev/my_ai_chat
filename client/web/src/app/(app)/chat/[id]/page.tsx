@@ -1,4 +1,5 @@
 "use client";
+import { FeedbackForm } from "@/components/feedback/feedback-form";
 import MarkdownResponse from "@/components/markdown-response";
 import {
   ChatBubble,
@@ -8,6 +9,7 @@ import {
   ChatBubbleMessage,
 } from "@/components/ui/chat/chat-bubble";
 import { ChatMessageList } from "@/components/ui/chat/chat-message-list";
+import CrudButton from "@/components/ui/crud-button";
 import { TextShimmer } from "@/components/ui/text-shimmer";
 import { useFirstMessage } from "@/hooks/use-first-message";
 import { useUserStore } from "@/hooks/use-user-store";
@@ -21,7 +23,12 @@ import {
 import { messageQuery } from "@/queries/message-queries";
 import { Message } from "@/types/message";
 import { useQuery } from "@tanstack/react-query";
-import { Copy, Edit, FileText, RefreshCcw, Trash2 } from "lucide-react";
+import {
+  FileText,
+  MessageCircleCode,
+  MessageSquareIcon,
+  Trash2,
+} from "lucide-react";
 import React, { useEffect } from "react";
 
 function ChatPage() {
@@ -38,12 +45,12 @@ function ChatPage() {
     queryFn: () => getAllMessages(chatId),
   });
 
-  const responseActionIcons = [
-    { icon: Copy, type: "Copy" },
-    { icon: RefreshCcw, type: "Regenerate" },
-  ];
+  // const responseActionIcons = [
+  //   { icon: Copy, type: "Copy" },
+  //   { icon: RefreshCcw, type: "Regenerate" },
+  // ];
   const promptActionIcons = [
-    { icon: Edit, type: "Edit" },
+    { icon: MessageSquareIcon, type: "Feedback" },
     { icon: Trash2, type: "Delete" },
   ];
 
@@ -64,6 +71,8 @@ function ChatPage() {
       (a, b) =>
         new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     );
+
+  const [openFeedback, setOpenFeedback] = React.useState(false);
 
   return (
     <ChatMessageList className="h-full">
@@ -110,11 +119,18 @@ function ChatPage() {
                       className="size-7 text-muted-foreground"
                       key={type}
                       icon={<Icon className="size-4" />}
-                      onClick={() =>
-                        console.log(
-                          "Action " + type + " clicked for message " + index
-                        )
-                      }
+                      onClick={() => {
+                        switch (type) {
+                          case "Feedback":
+                            // Handle edit action
+                            break;
+                          case "Delete":
+                            // Handle delete action
+                            break;
+                          default:
+                            break;
+                        }
+                      }}
                     />
                   ))}
                 </ChatBubbleActionWrapper>
@@ -148,7 +164,7 @@ function ChatPage() {
                     </div>
                   )}
                   <div className="mt-2 h-[25.5px]">
-                    {responseActionIcons.map(({ icon: Icon, type }) => (
+                    {/* {responseActionIcons.map(({ icon: Icon, type }) => (
                       <ChatBubbleAction
                         className="size-6 text-muted-foreground"
                         key={type}
@@ -159,7 +175,26 @@ function ChatPage() {
                           )
                         }
                       />
-                    ))}
+                    ))} */}
+                    <CrudButton
+                      title="Feedback"
+                      showTitle={false}
+                      open={openFeedback}
+                      setOpen={setOpenFeedback}
+                      description={"Submit your feedback here"}
+                      form={
+                        <FeedbackForm
+                          setOpen={setOpenFeedback}
+                          message_id={message.id}
+                        />
+                      }
+                    >
+                      <ChatBubbleAction
+                        className="size-7 text-muted-foreground"
+                        // key={type}
+                        icon={<MessageCircleCode className="size-4" />}
+                      />
+                    </CrudButton>
                   </div>
                 </ChatBubbleMessage>
               </ChatBubble>
