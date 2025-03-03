@@ -11,9 +11,21 @@ from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplat
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
-from app.models import User  # Import your database models
+from app.models import User, ConversationContext, db  # Import your database models
 
 load_dotenv()
+
+def save_conversation_context(user_id: int, prompt: str, response: str):
+    new_context = ConversationContext(user_id=user_id, prompt=prompt, response=response)
+    db.session.add(new_context)
+    db.session.commit()
+
+    # Delete older contexts if more than 5 exist
+    contexts = ConversationContext.query.filter_by(user_id=user_id).order_by(ConversationContext.created_at.desc()).all()
+    if len(contexts) > 5:
+        for context in contexts[5:]:
+            db.session.delete(context)
+        db.session.commit()
 
 def askAiWithFile(prompt: str, filepath: str, filename: str, user_id: str, modelname: str = "gemini-2.0-flash-thinking-exp-1219") -> str:
     """
@@ -86,6 +98,10 @@ def askAiWithFile(prompt: str, filepath: str, filename: str, user_id: str, model
         | output_parser
     )
 
+
     # Invoke the model with the user prompt
     response = rag_chain.invoke(prompt)
+
+    save_conversation_context(user_id, prompt, response)
+
     return response.strip()
