@@ -1,12 +1,17 @@
 import { queryKeyStore } from "@/lib/query-key-store";
+import { cn } from "@/lib/utils";
 import { feedbackQuery } from "@/queries/feedback-queries";
+import { Tooltip } from "@radix-ui/react-tooltip";
 import { useQuery } from "@tanstack/react-query";
+import { buttonVariants } from "./ui/button";
+import { Icons } from "./ui/icons";
 import {
   ResponsiveModal,
   ResponsiveModalContent,
   ResponsiveModalTitle,
   ResponsiveModalTrigger,
 } from "./ui/responsive-modal";
+import { TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 const TopMessagesBtn = () => {
   const { getFeedbacks } = feedbackQuery();
@@ -18,9 +23,21 @@ const TopMessagesBtn = () => {
 
   return (
     <ResponsiveModal>
-      <ResponsiveModalTrigger className="btn btn-primary">
-        Top Messages
-      </ResponsiveModalTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <ResponsiveModalTrigger
+            className={cn(
+              buttonVariants({ variant: "ghost", size: "icon" }),
+              "h-7 w-7"
+            )}
+          >
+            <Icons.topChat className="size-4" />
+          </ResponsiveModalTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Top Messages</p>
+        </TooltipContent>
+      </Tooltip>
       <ResponsiveModalContent size="lg">
         <ResponsiveModalTitle>Top Messages</ResponsiveModalTitle>
 

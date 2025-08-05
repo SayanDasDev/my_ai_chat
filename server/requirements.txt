@@ -26,3 +26,4 @@ chromadb
 nltk
 langchain_google_genai
 pdfplumber  # Assuming PyPDFLoader may depend on this or a similar library
+psycopg2

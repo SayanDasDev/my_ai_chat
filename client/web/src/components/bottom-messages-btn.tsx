@@ -1,12 +1,17 @@
 import { queryKeyStore } from "@/lib/query-key-store";
+import { cn } from "@/lib/utils";
 import { feedbackQuery } from "@/queries/feedback-queries";
+import { Tooltip } from "@radix-ui/react-tooltip";
 import { useQuery } from "@tanstack/react-query";
+import { buttonVariants } from "./ui/button";
+import { Icons } from "./ui/icons";
 import {
   ResponsiveModal,
   ResponsiveModalContent,
   ResponsiveModalTitle,
   ResponsiveModalTrigger,
 } from "./ui/responsive-modal";
+import { TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 const BottomMessagesBtn = () => {
   const { getFeedbacks } = feedbackQuery();
@@ -18,9 +23,21 @@ const BottomMessagesBtn = () => {
 
   return (
     <ResponsiveModal>
-      <ResponsiveModalTrigger className="btn btn-primary">
-        Bottom Messages
-      </ResponsiveModalTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <ResponsiveModalTrigger
+            className={cn(
+              buttonVariants({ variant: "ghost", size: "icon" }),
+              "h-7 w-7"
+            )}
+          >
+            <Icons.bottomChat className="size-4" />
+          </ResponsiveModalTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Bottom Messages</p>
+        </TooltipContent>
+      </Tooltip>
       <ResponsiveModalContent size="lg">
         <ResponsiveModalTitle>Bottom Messages</ResponsiveModalTitle>
         {isLoading && <div className="text-center">Loading...</div>}
