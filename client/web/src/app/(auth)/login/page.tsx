@@ -60,7 +60,7 @@ export default function LoginPage() {
       setAccessToken(data.access_token);
       setRefreshToken(data.refresh_token);
       router.push("/chat");
-      console.log(data);
+      // console.log(data);
       toast.success("Welcome back!", {
         id: context?.toastId,
       });

@@ -125,7 +125,7 @@ const ChatInput = () => {
 
   function onSubmit(values: z.infer<typeof sendMessageSchema>) {
     mutate(values);
-    console.log(values);
+    // console.log(values);
   }
 
   useEffect(() => {

@@ -3,13 +3,13 @@ import { BACKEND_URL, ensureAuthenticated } from "@/lib/utils";
 import { sendMessageSchema } from "@/types/schema/send-message-schema";
 import { z } from "zod";
 
-
 export const messageQuery = () => {
+  const { accessToken } = useTokenStore.getState();
 
-  const { accessToken } = useTokenStore.getState()
-
-
-  const createMessage = async (values: z.infer<typeof sendMessageSchema>, isFirstMessage: boolean) => {
+  const createMessage = async (
+    values: z.infer<typeof sendMessageSchema>,
+    isFirstMessage: boolean
+  ) => {
     await ensureAuthenticated();
 
     const formData = new FormData();
@@ -31,19 +31,14 @@ export const messageQuery = () => {
     });
 
     if (!response.ok) {
-      console.log(response.status)
+      // console.log(response.status)
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    if (isFirstMessage)
-
-
-      return response.json();
+    if (isFirstMessage) return response.json();
   };
 
-
   const getAllMessages = async (id: string) => {
-
     if (id == "") {
       throw new Error(`Cant find ChatId`);
     }
@@ -53,17 +48,14 @@ export const messageQuery = () => {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    })
-
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     return response.json();
+  };
 
-  }
-
-
-  return { createMessage, getAllMessages }
-}
+  return { createMessage, getAllMessages };
+};
